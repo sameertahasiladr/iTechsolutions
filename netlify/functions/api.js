@@ -9,19 +9,22 @@ const serverless    = require('serverless-http');
 const app = express();
 
 // ---------- PATHS ----------
-const isProd   = process.env.NODE_ENV === 'production';
-const dbPath   = isProd ? '/tmp/itech.db' : 'itech.db';
-const uploadDir = isProd ? '/tmp/uploads' : path.join(__dirname, 'public', 'uploads');
+const dbPath    = '/tmp/itech.db';           // ALWAYS /tmp on Netlify
+const uploadDir = '/tmp/uploads';            // ALWAYS /tmp
 
-// Ensure dirs exist
-[uploadDir].forEach(p => {
-  if (!fs.existsSync(p)) fs.mkdirSync(p, { recursive: true });
-});
+// Ensure upload directory exists
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+  console.log('Created:', uploadDir);
+}
 
 // ---------- DB ----------
 const db = new sqlite3.Database(dbPath, err => {
-  if (err) console.error('DB error', err);
-  else console.log('SQLite connected →', dbPath);
+  if (err) {
+    console.error('DB connection failed:', err.message);
+  } else {
+    console.log('SQLite connected →', dbPath);
+  }
 });
 
 db.serialize(() => {
@@ -35,11 +38,14 @@ db.serialize(() => {
       description TEXT NOT NULL,
       images TEXT
     )
-  `);
+  `, err => {
+    if (err) console.error('Table creation error:', err.message);
+  });
 });
 
 // ---------- MIDDLEWARE ----------
 app.use(express.json());
+app.use('/uploads', express.static(uploadDir));  // Serve uploaded images
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ---------- MULTER ----------
@@ -47,10 +53,14 @@ const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, uploadDir),
   filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
 });
+
 const upload = multer({
   storage,
-  limits: { fileSize: 1 * 1024 * 1024 },
-  fileFilter: (req, file, cb) => file.mimetype.startsWith('image/') ? cb(null, true) : cb(new Error('Images only'))
+  limits: { fileSize: 1 * 1024 * 1024 }, // 1MB
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) cb(null, true);
+    else cb(new Error('Only images allowed'));
+  }
 });
 
 // ---------- ROUTES ----------
@@ -112,7 +122,6 @@ app.delete('/api/products/:id', (req, res) => {
   });
 });
 
-// Simple admin login (change password!)
 app.post('/api/admin/login', express.json(), (req, res) => {
   const { username, password } = req.body;
   if (username === 'admin' && password === 'itech2025') {
@@ -121,12 +130,6 @@ app.post('/api/admin/login', express.json(), (req, res) => {
     res.status(401).json({ success: false });
   }
 });
-
-// ---------- LOCAL DEV ----------
-if (!isProd) {
-  const PORT = process.env.PORT || 3000;
-  app.listen(PORT, () => console.log(`Local → http://localhost:${PORT}`));
-}
 
 // ---------- NETLIFY ----------
 module.exports = app;
