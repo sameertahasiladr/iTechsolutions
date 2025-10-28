@@ -1,13 +1,14 @@
-// script.js – FULLY INTEGRATED WITH BACKEND
-
+// script.js – PERMANENT: Supabase + Cloudinary
 const PHONE_NUMBER = '9545690700';
-const API_BASE = '/api';  // Change if backend is on different port/domain
+const API_BASE = '/api';
+const CLOUDINARY_CLOUD = 'ddktvfhsb';
+const CLOUDINARY_PRESET = 'itechsolution';
 
 let products = [];
 let cart = JSON.parse(localStorage.getItem('cart') || '[]');
 let isAdminAuthenticated = false;
 
-// === ADMIN AUTH (via backend) ===
+// === ADMIN AUTH ===
 async function loginAdmin(username, password) {
     const res = await fetch(`${API_BASE}/admin/login`, {
         method: 'POST',
@@ -54,11 +55,11 @@ document.getElementById('admin-logout')?.addEventListener('click', () => {
     checkAdminAuth();
 });
 
-// === FETCH PRODUCTS FROM BACKEND ===
+// === FETCH PRODUCTS ===
 async function loadProducts() {
     try {
         const res = await fetch(`${API_BASE}/products`);
-        if (!res.ok) throw new Error('Failed to load products');
+        if (!res.ok) throw new Error('Failed to load');
         products = await res.json();
         renderAll();
     } catch (err) {
@@ -81,7 +82,7 @@ function renderAll() {
     if (document.getElementById('cart-items')) displayCart();
 }
 
-// === DISPLAY PRODUCTS (same UI, now uses server images) ===
+// === DISPLAY PRODUCTS ===
 function displayProducts(container, list, isAdmin = false, isFeatured = false) {
     if (!container) return;
     container.innerHTML = '';
@@ -130,7 +131,7 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
                         </p>
                         <p class="text-muted mb-0">${product.description}</p>
                         <button class="btn btn-outline-primary mt-2 w-100" onclick="addToCart(${product.id})">
-                            <i class="bi bi-cart-plus me-2"></i>Add to Cart
+                            Add to Cart
                         </button>
                     </div>
                 </div>
@@ -175,7 +176,7 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
             if (!isAdmin) {
                 const btn = document.createElement('button');
                 btn.className = 'btn btn-outline-primary';
-                btn.innerHTML = '<i class="bi bi-cart-plus"></i> Add';
+                btn.innerHTML = 'Add';
                 btn.onclick = () => addToCart(product.id);
                 item.appendChild(btn);
             } else {
@@ -183,11 +184,11 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
                 actions.className = 'd-flex gap-2';
                 const edit = document.createElement('button');
                 edit.className = 'btn btn-outline-primary';
-                edit.innerHTML = '<i class="bi bi-pencil"></i>';
+                edit.innerHTML = '';
                 edit.onclick = () => editProduct(product.id);
                 const del = document.createElement('button');
                 del.className = 'btn btn-outline-danger';
-                del.innerHTML = '<i class="bi bi-trash"></i>';
+                del.innerHTML = '';
                 del.onclick = () => deleteProduct(product.id);
                 actions.appendChild(edit);
                 actions.appendChild(del);
@@ -198,7 +199,7 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
     });
 }
 
-// === CART (client-side only) ===
+// === CART ===
 function addToCart(id) {
     const p = products.find(x => x.id === id);
     if (!p) return showToast('Product not found.', 'error');
@@ -241,7 +242,7 @@ function displayCart() {
                 </p>
                 <p class="text-muted mb-0">Qty: <input type="number" value="${item.quantity}" min="1" class="form-control d-inline-block w-auto"></p>
             </div>
-            <button class="btn btn-outline-danger"><i class="bi bi-trash"></i></button>
+            <button class="btn btn-outline-danger">Remove</button>
         `;
         cartItem.querySelector('input').onchange = e => updateQuantity(item.id, e.target.value);
         cartItem.querySelector('button').onclick = () => removeFromCart(item.id);
@@ -325,53 +326,79 @@ document.getElementById('images')?.addEventListener('change', e => {
         reader.onload = ev => {
             const img = document.createElement('img');
             img.src = ev.target.result;
-            img.style.cssText = 'width:100px;height:100px;object-fit:cover;border:1px solid #dee2e6;border-radius:0.25rem;';
+            img.style.cssText = 'width:100px;height:100px;object-fit:cover;border:1px solid #dee2e6;border-radius:0.25rem;margin:4px;';
             preview.appendChild(img);
         };
         reader.readAsDataURL(file);
     });
 });
 
-// === ADMIN: SAVE PRODUCT (to backend) ===
+// === ADMIN: SAVE PRODUCT (Cloudinary + Supabase) ===
 document.getElementById('save-product')?.addEventListener('click', async () => {
     const id = document.getElementById('edit-id').value;
-    const formData = new FormData();
-    formData.append('name', document.getElementById('name').value);
-    formData.append('type', document.getElementById('type').value);
-    formData.append('price', document.getElementById('price').value);
-    const discount = document.getElementById('discount').value;
-    if (discount) formData.append('discount', discount);
-    formData.append('description', document.getElementById('description').value);
-
+    const name = document.getElementById('name').value.trim();
+    const type = document.getElementById('type').value;
+    const price = +document.getElementById('price').value;
+    const discount = document.getElementById('discount').value ? +document.getElementById('discount').value : null;
+    const description = document.getElementById('description').value.trim();
     const files = document.getElementById('images').files;
-    for (let f of files) formData.append('images', f);
+    const existingImages = document.getElementById('existing-images').value || '[]';
 
-    if (id) {
-        const existing = products.find(p => p.id == id);
-        formData.append('existingImages', JSON.stringify(existing.images));
+    if (!name || !type || !price || !description) {
+        showToast('Fill all required fields', 'error');
+        return;
     }
 
-    const url = id ? `${API_BASE}/products/${id}` : `${API_BASE}/products`;
+    let images = JSON.parse(existingImages);
+
+    // Upload to Cloudinary
+    for (let file of files) {
+        if (file.size > 1 * 1024 * 1024) {
+            showToast('Image too large (max 1MB)', 'error');
+            return;
+        }
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', CLOUDINARY_PRESET);
+
+        try {
+            const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+            if (data.secure_url) {
+                images.push(data.secure_url);
+            }
+        } catch (err) {
+            showToast('Image upload failed', 'error');
+            return;
+        }
+    }
+
+    const product = { name, type, price, discount, description, images };
+    const url = id ? `/api/products/${id}` : '/api/products';
     const method = id ? 'PUT' : 'POST';
 
-    try {
-        const res = await fetch(url, { method, body: formData });
-        const data = await res.json();
-        if (res.ok) {
-            showToast(id ? 'Updated!' : 'Added!', 'success');
-            loadProducts();
-            clearAdminForm();
-            bootstrap.Modal.getInstance(document.getElementById('productModal')).hide();
-        } else {
-            showToast(data.error || 'Error', 'error');
-        }
-    } catch (err) {
-        showToast('Network error.', 'error');
+    const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(product)
+    });
+
+    if (res.ok) {
+        showToast(id ? 'Updated!' : 'Added!', 'success');
+        loadProducts();
+        clearAdminForm();
+        bootstrap.Modal.getInstance(document.getElementById('productModal')).hide();
+    } else {
+        const err = await res.json();
+        showToast(err.error || 'Save failed', 'error');
     }
 });
 
 function clearAdminForm() {
-    ['edit-id', 'name', 'type', 'price', 'discount', 'description', 'images'].forEach(id => {
+    ['edit-id', 'name', 'type', 'price', 'discount', 'description', 'images', 'existing-images'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
     });
@@ -387,6 +414,7 @@ function editProduct(id) {
     document.getElementById('price').value = p.price;
     document.getElementById('discount').value = p.discount || '';
     document.getElementById('description').value = p.description;
+    document.getElementById('existing-images').value = JSON.stringify(p.images || []);
     document.getElementById('productModalLabel').textContent = 'Edit Product';
 
     const preview = document.getElementById('image-preview');
@@ -394,7 +422,7 @@ function editProduct(id) {
     (p.images || []).forEach(img => {
         const el = document.createElement('img');
         el.src = img;
-        el.style.cssText = 'width:100px;height:100px;object-fit:cover;border:1px solid #dee2e6;border-radius:0.25rem;';
+        el.style.cssText = 'width:100px;height:100px;object-fit:cover;border:1px solid #dee2e6;border-radius:0.25rem;margin:4px;';
         preview.appendChild(el);
     });
     new bootstrap.Modal(document.getElementById('productModal')).show();
@@ -412,11 +440,6 @@ async function deleteProduct(id) {
             showToast('Delete failed.', 'error');
         }
     });
-}
-
-function displayAdminProducts() {
-    const container = document.getElementById('admin-product-list');
-    if (container) displayProducts(container, products, true);
 }
 
 // === FILTERS & SEARCH ===
@@ -500,7 +523,6 @@ if (window.location.pathname.includes('admin.html')) {
     document.addEventListener('DOMContentLoaded', loadProducts);
 }
 
-// Shipping
 if (document.getElementById('state')) {
     document.getElementById('state').onchange = displayCart;
     document.getElementById('pickup')?.addEventListener('change', displayCart);
