@@ -9,8 +9,8 @@ const serverless    = require('serverless-http');
 const app = express();
 
 // ---------- PATHS ----------
-const dbPath    = '/tmp/itech.db';           // ALWAYS /tmp on Netlify
-const uploadDir = '/tmp/uploads';            // ALWAYS /tmp
+const dbPath    = '/tmp/itech.db';           // Always /tmp
+const uploadDir = '/tmp/uploads';            // Always /tmp
 
 // Ensure upload directory exists
 if (!fs.existsSync(uploadDir)) {
@@ -45,7 +45,11 @@ db.serialize(() => {
 
 // ---------- MIDDLEWARE ----------
 app.use(express.json());
-app.use('/uploads', express.static(uploadDir));  // Serve uploaded images
+
+// SERVE UPLOADED IMAGES FROM /tmp/uploads
+app.use('/uploads', express.static(uploadDir));
+
+// Serve static frontend files
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ---------- MULTER ----------
