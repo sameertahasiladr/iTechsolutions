@@ -1,4 +1,4 @@
-// script.js – FINAL: Add to Cart + "Go to Cart" + Amazon Images
+// script.js – FINAL: View More/Less + Go to Cart + Amazon Images
 const PHONE_NUMBER = '9545690700';
 const API_BASE = '/api';
 const CLOUDINARY_CLOUD = 'ddktvfhsb';
@@ -82,7 +82,7 @@ function renderAll() {
     if (document.getElementById('cart-items')) displayCart();
 }
 
-// === DISPLAY PRODUCTS (WITH "GO TO CART" BUTTON) ===
+// === DISPLAY PRODUCTS WITH VIEW MORE/LESS ===
 function displayProducts(container, list, isAdmin = false, isFeatured = false) {
     if (!container) return;
     container.innerHTML = '';
@@ -98,6 +98,11 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
         const images = product.images || [];
         const inCart = cart.find(i => i.id === product.id);
         const quantity = inCart ? inCart.quantity : 0;
+
+        // Truncate description for preview (max 100 chars)
+        const shortDesc = product.description.length > 100 
+            ? product.description.substring(0, 100) + '...' 
+            : product.description;
 
         if (isFeatured) {
             item.className = 'col';
@@ -131,7 +136,13 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
                                 : `<strong>${product.price} Rs</strong>`
                             }
                         </p>
-                        <p class="text-muted mb-0">${product.description}</p>
+                        <p class="text-muted mb-2 desc-text" style="font-size:0.9rem;">
+                            <span class="short-desc">${shortDesc}</span>
+                            ${product.description.length > 100 ? `
+                                <span class="full-desc d-none">${product.description}</span>
+                                <a href="#" class="text-primary view-more" style="font-size:0.8rem;">View More</a>
+                            ` : ''}
+                        </p>
                         <div class="mt-2 d-flex gap-2">
                             <button class="btn btn-outline-primary flex-fill add-to-cart-btn" data-id="${product.id}">
                                 ${quantity > 0 ? `Added (${quantity})` : 'Add to Cart'}
@@ -174,7 +185,13 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
                             : `<strong>${product.price} Rs</strong>`
                         }
                     </p>
-                    <p class="text-muted mb-0">${product.description}</p>
+                    <p class="text-muted mb-0 desc-text" style="font-size:0.9rem;">
+                        <span class="short-desc">${shortDesc}</span>
+                        ${product.description.length > 100 ? `
+                            <span class="full-desc d-none">${product.description}</span>
+                            <a href="#" class="text-primary view-more" style="font-size:0.8rem;">View More</a>
+                        ` : ''}
+                    </p>
                 </div>
                 <div class="d-flex gap-2 align-items-center">
                     <button class="btn btn-outline-primary add-to-cart-btn" data-id="${product.id}">
@@ -203,7 +220,26 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
         container.appendChild(item);
     });
 
-    // Re-attach event listeners to "Add to Cart" buttons
+    // === VIEW MORE / VIEW LESS TOGGLE ===
+    document.querySelectorAll('.view-more').forEach(link => {
+        link.onclick = (e) => {
+            e.preventDefault();
+            const parent = link.parentElement;
+            const short = parent.querySelector('.short-desc');
+            const full = parent.querySelector('.full-desc');
+            if (full.classList.contains('d-none')) {
+                short.classList.add('d-none');
+                full.classList.remove('d-none');
+                link.textContent = 'View Less';
+            } else {
+                short.classList.remove('d-none');
+                full.classList.add('d-none');
+                link.textContent = 'View More';
+            }
+        };
+    });
+
+    // === ADD TO CART BUTTONS ===
     document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
         btn.onclick = () => addToCart(parseInt(btn.dataset.id));
     });
@@ -223,13 +259,12 @@ function addToCart(id) {
     localStorage.setItem('cart', JSON.stringify(cart));
     showToast(`${p.name} added!`, 'success');
 
-    // Update all "Add to Cart" buttons for this product
+    // Update all "Add to Cart" buttons
     document.querySelectorAll(`.add-to-cart-btn[data-id="${id}"]`).forEach(btn => {
         const qty = cart.find(i => i.id === id).quantity;
         btn.textContent = `Added (${qty})`;
         btn.classList.replace('btn-outline-primary', 'btn-success');
         
-        // Insert "Go to Cart" button if not exists
         if (!btn.parentElement.querySelector('a[href="/cart.html"]')) {
             const goToCart = document.createElement('a');
             goToCart.href = '/cart.html';
@@ -288,7 +323,7 @@ function displayCart() {
     calculateTotal(subtotal);
 }
 
-// === UPDATE & REMOVE FROM CART ===
+// === UPDATE & REMOVE ===
 function updateQuantity(id, qty) {
     qty = parseInt(qty);
     if (qty < 1) return showToast('Invalid quantity.', 'error');
@@ -297,7 +332,7 @@ function updateQuantity(id, qty) {
         item.quantity = qty;
         localStorage.setItem('cart', JSON.stringify(cart));
         displayCart();
-        renderAll(); // Update Add to Cart buttons
+        renderAll();
     }
 }
 
@@ -307,7 +342,7 @@ function removeFromCart(id) {
     localStorage.setItem('cart', JSON.stringify(cart));
     showToast(`${p?.name || 'Item'} removed.`, 'success');
     displayCart();
-    renderAll(); // Update Add to Cart buttons
+    renderAll();
 }
 
 // === CALCULATE TOTAL ===
@@ -557,7 +592,6 @@ if (window.location.pathname.includes('admin.html')) {
 } else {
     document.addEventListener('DOMContentLoaded', () => {
         loadProducts();
-        // Re-attach Add to Cart buttons after render
         setTimeout(() => {
             document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
                 btn.onclick = () => addToCart(parseInt(btn.dataset.id));
