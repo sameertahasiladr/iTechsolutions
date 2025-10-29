@@ -689,7 +689,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 // === SERVICE BOOKING: LAPTOP, MOBILE, PRINTER, CCTV, SOFTWARE ===
-document.getElementById('book-whatsapp')?.addEventListener('click', () => {
+document.addEventListener('service-book-whatsapp', () => {
     const name = document.getElementById('service-name')?.value.trim();
     const address = document.getElementById('service-address')?.value.trim();
     const product = document.getElementById('service-product')?.value;
@@ -697,7 +697,7 @@ document.getElementById('book-whatsapp')?.addEventListener('click', () => {
     const issue = document.getElementById('service-issue')?.value.trim();
 
     if (!name || !address || !product || !issue) {
-        showToast('Please fill Name, Address, Product & Problem.', 'error');
+        showToast('Please fill all required fields.', 'error');
         return;
     }
 
@@ -709,21 +709,27 @@ document.getElementById('book-whatsapp')?.addEventListener('click', () => {
 *Customer Details*
 Name: ${name}
 Address: ${address}${modelLine}
-Product: ${product}
+Device: ${product}
 
-*Issue Description*
+*Problem Description*
 ${issue}
 
-*Service Details*
+*Service Info*
 • Free Diagnosis
-• Fast Repair (Same Day if possible)
-• 30 Days Repair Warranty
+• Fast Repair (Same Day Possible)
+• 30 Days Warranty
 • Doorstep Service (Goa)
 
-*Note:* Technician will contact you within 1 hour.
+*Note:* Technician will call you within 1 hour.
 `.trim();
 
     const encoded = encodeURIComponent(message);
     window.open(`https://wa.me/${PHONE_NUMBER}?text=${encoded}`, '_blank');
-    showToast('Service request sent!', 'success');
+    showToast('Request sent successfully!', 'success');
+    
+    // Optional: Reset form after send
+    setTimeout(() => {
+        document.getElementById('service-form').reset();
+        document.getElementById('service-form').classList.remove('was-validated');
+    }, 1000);
 });
