@@ -37,23 +37,73 @@
                 <form class="d-flex flex-wrap gap-3 mb-3">
                     <input type="text" id="address" placeholder="Enter your address" class="form-control" required>
                     <select id="state" class="form-select" required>
-                        <option value="">Select State</option>
+                        <option value="">Select State / UT</option>
+                        <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
                         <option value="Andhra Pradesh">Andhra Pradesh</option>
+                        <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                        <option value="Assam">Assam</option>
+                        <option value="Bihar">Bihar</option>
+                        <option value="Chandigarh">Chandigarh</option>
+                        <option value="Chhattisgarh">Chhattisgarh</option>
+                        <option value="Dadra and Nagar Haveli and Daman and Diu">Dadra and Nagar Haveli and Daman and Diu</option>
+                        <option value="Delhi">Delhi</option>
                         <option value="Goa">Goa</option>
-                        <!-- Add other states as needed -->
+                        <option value="Gujarat">Gujarat</option>
+                        <option value="Haryana">Haryana</option>
+                        <option value="Himachal Pradesh">Himachal Pradesh</option>
+                        <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+                        <option value="Jharkhand">Jharkhand</option>
+                        <option value="Karnataka">Karnataka</option>
+                        <option value="Kerala">Kerala</option>
+                        <option value="Ladakh">Ladakh</option>
+                        <option value="Lakshadweep">Lakshadweep</option>
+                        <option value="Madhya Pradesh">Madhya Pradesh</option>
+                        <option value="Maharashtra">Maharashtra</option>
+                        <option value="Manipur">Manipur</option>
+                        <option value="Meghalaya">Meghalaya</option>
+                        <option value="Mizoram">Mizoram</option>
+                        <option value="Nagaland">Nagaland</option>
+                        <option value="Odisha">Odisha</option>
+                        <option value="Puducherry">Puducherry</option>
+                        <option value="Punjab">Punjab</option>
+                        <option value="Rajasthan">Rajasthan</option>
+                        <option value="Sikkim">Sikkim</option>
+                        <option value="Tamil Nadu">Tamil Nadu</option>
+                        <option value="Telangana">Telangana</option>
+                        <option value="Tripura">Tripura</option>
+                        <option value="Uttar Pradesh">Uttar Pradesh</option>
+                        <option value="Uttarakhand">Uttarakhand</option>
+                        <option value="West Bengal">West Bengal</option>
                     </select>
                 </form>
-                <div class="goa-pickup d-none mb-3 card p-3" id="goa-pickup">
+
+                <!-- Goa Pickup Option -->
+                <div class="goa-pickup d-none mb-3 card p-3 border-primary" id="goa-pickup">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="pickup">
-                        <label class="form-check-label" for="pickup">Pickup from dealer (Free)</label>
+                        <label class="form-check-label text-success fw-semibold" for="pickup">
+                            <i class="bi bi-truck me-1"></i> Pickup from dealer (Free)
+                        </label>
                     </div>
                 </div>
-                <p class="text-muted">Shipping Charge: <span id="shipping-charge">0</span> Rs</p>
-                <p class="text-muted">Total: <span id="total">0</span> Rs</p>
-                <div class="order-buttons d-flex flex-wrap gap-3 justify-content-center mt-3">
-                    <button id="order-call" class="btn btn-outline-primary"><i class="bi bi-telephone"></i> Order via Call</button>
-                    <button id="order-whatsapp" class="btn btn-outline-primary"><i class="bi bi-whatsapp"></i> Order via WhatsApp</button>
+
+                <!-- Dynamic Shipping Info -->
+                <p class="text-muted mb-1">
+                    Shipping Charge: 
+                    <strong>
+                        <span id="shipping-charge">300</span> Rs 
+                        <span id="shipping-note" class="text-primary small">(Rest of India)</span>
+                    </strong>
+                </p>
+                <p class="text-muted fw-bold">Total: <span id="total">0</span> Rs</p>
+
+                <div class="order-buttons d-flex flex-wrap gap-3 justify-content-center mt-4">
+                    <button id="order-call" class="btn btn-outline-primary">
+                        <i class="bi bi-telephone"></i> Order via Call
+                    </button>
+                    <button id="order-whatsapp" class="btn btn-success">
+                        <i class="bi bi-whatsapp"></i> Order via WhatsApp
+                    </button>
                 </div>
             </div>
         </section>

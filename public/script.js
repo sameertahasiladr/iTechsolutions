@@ -342,27 +342,34 @@ function removeFromCart(id) {
     renderAll();
 }
 
-// === CALCULATE TOTAL ===
+// === CALCULATE TOTAL WITH CLEAR LABEL ===
 function calculateTotal(subtotal) {
     const state = document.getElementById('state')?.value;
     const pickup = document.getElementById('pickup')?.checked;
     const goa = document.getElementById('goa-pickup');
-    const charge = document.getElementById('shipping-charge');
-    const total = document.getElementById('total');
-    if (!charge || !total) return;
+    const chargeEl = document.getElementById('shipping-charge');
+    const noteEl = document.getElementById('shipping-note');
+    const totalEl = document.getElementById('total');
+
+    if (!chargeEl || !totalEl || !noteEl) return;
 
     let shipping = 300;
+    let note = '(Rest of India)';
+
     if (state === 'Goa') {
         goa?.classList.replace('d-none', 'd-block');
         shipping = pickup ? 0 : 200;
+        note = pickup ? '(Free Pickup)' : '(Goa Delivery)';
     } else {
         goa?.classList.replace('d-block', 'd-none');
         shipping = 300;
+        note = '(Rest of India)';
     }
-    charge.textContent = shipping;
-    total.textContent = subtotal + shipping;
-}
 
+    chargeEl.textContent = shipping;
+    noteEl.textContent = note;
+    totalEl.textContent = subtotal + shipping;
+}
 // === ORDER BUTTONS ===
 document.getElementById('order-call')?.addEventListener('click', () => {
     const addr = document.getElementById('address')?.value.trim();
