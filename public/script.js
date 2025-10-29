@@ -1,4 +1,4 @@
-// script.js – FINAL: Fully Responsive + Professional Dealer Message + Customer Name
+// script.js – FINAL: Customer Name FIXED + Professional Messages + Auto Update
 const PHONE_NUMBER = '9545690700';
 const API_BASE = '/api';
 const CLOUDINARY_CLOUD = 'ddktvfhsb';
@@ -30,14 +30,14 @@ function checkAdminAuth() {
     const panel = document.getElementById('admin-panel');
     if (!login || !panel) return;
 
-if (isAdminAuthenticated) {
-    login.classList.add('d-none');
-    panel.classList.remove('d-none');
-    loadProducts();
-} else {
-    login.classList.remove('d-none');
-    panel.classList.add('d-none');
-}
+    if (isAdminAuthenticated) {
+        login.classList.add('d-none');
+        panel.classList.remove('d-none');
+        loadProducts();
+    } else {
+        login.classList.remove('d-none');
+        panel.classList.add('d-none');
+    }
 }
 
 document.getElementById('login-form')?.addEventListener('submit', e => {
@@ -342,7 +342,7 @@ function removeFromCart(id) {
     renderAll();
 }
 
-// === CALCULATE TOTAL WITH CLEAR LABEL ===
+// === CALCULATE TOTAL ===
 function calculateTotal(subtotal) {
     const state = document.getElementById('state')?.value;
     const pickup = document.getElementById('pickup')?.checked;
@@ -371,16 +371,19 @@ function calculateTotal(subtotal) {
     totalEl.textContent = subtotal + shipping;
 }
 
-// === ORDER VIA WHATSAPP — WITH CUSTOMER NAME ===
+// === ORDER VIA WHATSAPP — NAME FIXED 100% ===
 document.getElementById('order-whatsapp')?.addEventListener('click', () => {
-    const name = document.getElementById('customer-name')?.value.trim();
-    const addr = document.getElementById('address')?.value.trim();
-    const state = document.getElementById('state')?.value;
+    const nameEl = document.getElementById('customer-name');
+    const addrEl = document.getElementById('address');
+    const stateEl = document.getElementById('state');
+    const name = nameEl?.value.trim();
+    const addr = addrEl?.value.trim();
+    const state = stateEl?.value;
     const pickup = state === 'Goa' && document.getElementById('pickup')?.checked;
     const total = document.getElementById('total')?.textContent;
 
     if (!name || !addr || !state || cart.length === 0) {
-        showToast('Please fill name, address & state.', 'error');
+        showToast('Please fill Name, Address & State.', 'error');
         return;
     }
 
@@ -417,16 +420,19 @@ Shipping: ${shipping} Rs ${shippingNote}
     window.open(`https://wa.me/${PHONE_NUMBER}?text=${encoded}`, '_blank');
 });
 
-// === ORDER VIA CALL — NAME COPIED ===
+// === ORDER VIA CALL — NAME INCLUDED ===
 document.getElementById('order-call')?.addEventListener('click', () => {
-    const name = document.getElementById('customer-name')?.value.trim();
-    const addr = document.getElementById('address')?.value.trim();
-    const state = document.getElementById('state')?.value;
+    const nameEl = document.getElementById('customer-name');
+    const addrEl = document.getElementById('address');
+    const stateEl = document.getElementById('state');
+    const name = nameEl?.value.trim();
+    const addr = addrEl?.value.trim();
+    const state = stateEl?.value;
     const pickup = state === 'Goa' && document.getElementById('pickup')?.checked;
     const total = document.getElementById('total')?.textContent;
 
     if (!name || !addr || !state || cart.length === 0) {
-        showToast('Please fill name, address & state.', 'error');
+        showToast('Please fill Name, Address & State.', 'error');
         return;
     }
 
@@ -458,18 +464,19 @@ Please confirm stock and arrange delivery.
     });
 });
 
-// === AUTO UPDATE TOTAL ON ANY INPUT CHANGE ===
+// === AUTO UPDATE ON ALL INPUTS (FIXED NAME BUG) ===
 document.getElementById('customer-name')?.addEventListener('input', () => {
-    if (document.getElementById('total')?.textContent) {
-        const subtotal = parseInt(document.getElementById('total').textContent) - parseInt(document.getElementById('shipping-charge').textContent || '0');
-        calculateTotal(subtotal);
-    }
+    const subtotal = cart.reduce((sum, item) => {
+        const p = products.find(x => x.id === item.id);
+        return sum + ((p?.discount || p?.price) * item.quantity);
+    }, 0);
+    calculateTotal(subtotal);
 });
 document.getElementById('address')?.addEventListener('input', displayCart);
 document.getElementById('state')?.addEventListener('change', displayCart);
 document.getElementById('pickup')?.addEventListener('change', displayCart);
 
-// === ADMIN: IMAGE PREVIEW ===
+// === ADMIN: IMAGE PREVIEW, SAVE, EDIT, DELETE ===
 document.getElementById('images')?.addEventListener('change', e => {
     const preview = document.getElementById('image-preview');
     preview.innerHTML = '';
@@ -487,7 +494,6 @@ document.getElementById('images')?.addEventListener('change', e => {
     });
 });
 
-// === ADMIN: SAVE PRODUCT ===
 document.getElementById('save-product')?.addEventListener('click', async () => {
     const id = document.getElementById('edit-id').value;
     const name = document.getElementById('name').value.trim();
@@ -677,9 +683,8 @@ document.addEventListener('DOMContentLoaded', () => {
         checkAdminAuth();
     } else {
         loadProducts();
-        // Auto render cart after products load
         setTimeout(() => {
             if (document.getElementById('cart-items')) displayCart();
         }, 800);
     }
-})
+});
