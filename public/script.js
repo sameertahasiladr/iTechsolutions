@@ -1,4 +1,4 @@
-// script.js – PERMANENT: Supabase + Cloudinary + AMAZON-STYLE IMAGES
+// script.js – FINAL: Add to Cart + "Go to Cart" + Amazon Images
 const PHONE_NUMBER = '9545690700';
 const API_BASE = '/api';
 const CLOUDINARY_CLOUD = 'ddktvfhsb';
@@ -82,7 +82,7 @@ function renderAll() {
     if (document.getElementById('cart-items')) displayCart();
 }
 
-// === DISPLAY PRODUCTS (AMAZON-STYLE IMAGES) ===
+// === DISPLAY PRODUCTS (WITH "GO TO CART" BUTTON) ===
 function displayProducts(container, list, isAdmin = false, isFeatured = false) {
     if (!container) return;
     container.innerHTML = '';
@@ -96,6 +96,8 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
     displayList.forEach(product => {
         const item = document.createElement('div');
         const images = product.images || [];
+        const inCart = cart.find(i => i.id === product.id);
+        const quantity = inCart ? inCart.quantity : 0;
 
         if (isFeatured) {
             item.className = 'col';
@@ -130,9 +132,12 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
                             }
                         </p>
                         <p class="text-muted mb-0">${product.description}</p>
-                        <button class="btn btn-outline-primary mt-2 w-100" onclick="addToCart(${product.id})">
-                            Add to Cart
-                        </button>
+                        <div class="mt-2 d-flex gap-2">
+                            <button class="btn btn-outline-primary flex-fill add-to-cart-btn" data-id="${product.id}">
+                                ${quantity > 0 ? `Added (${quantity})` : 'Add to Cart'}
+                            </button>
+                            ${quantity > 0 ? `<a href="/cart.html" class="btn btn-primary flex-fill">Go to Cart</a>` : ''}
+                        </div>
                     </div>
                 </div>
             `;
@@ -171,17 +176,17 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
                     </p>
                     <p class="text-muted mb-0">${product.description}</p>
                 </div>
+                <div class="d-flex gap-2 align-items-center">
+                    <button class="btn btn-outline-primary add-to-cart-btn" data-id="${product.id}">
+                        ${quantity > 0 ? `Added (${quantity})` : 'Add'}
+                    </button>
+                    ${quantity > 0 ? `<a href="/cart.html" class="btn btn-primary">Go to Cart</a>` : ''}
+                </div>
             `;
 
-            if (!isAdmin) {
-                const btn = document.createElement('button');
-                btn.className = 'btn btn-outline-primary';
-                btn.innerHTML = 'Add';
-                btn.onclick = () => addToCart(product.id);
-                item.appendChild(btn);
-            } else {
+            if (isAdmin) {
                 const actions = document.createElement('div');
-                actions.className = 'd-flex gap-2';
+                actions.className = 'd-flex gap-2 ms-3';
                 const edit = document.createElement('button');
                 edit.className = 'btn btn-outline-primary';
                 edit.innerHTML = 'Edit';
@@ -192,25 +197,52 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
                 del.onclick = () => deleteProduct(product.id);
                 actions.appendChild(edit);
                 actions.appendChild(del);
-                item.appendChild(actions);
+                item.querySelector('.d-flex.gap-2').appendChild(actions);
             }
         }
         container.appendChild(item);
     });
+
+    // Re-attach event listeners to "Add to Cart" buttons
+    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+        btn.onclick = () => addToCart(parseInt(btn.dataset.id));
+    });
 }
 
-// === CART ===
+// === ADD TO CART (UPDATE BUTTON + SHOW GO TO CART) ===
 function addToCart(id) {
     const p = products.find(x => x.id === id);
     if (!p) return showToast('Product not found.', 'error');
+
     const item = cart.find(i => i.id === id);
-    if (item) item.quantity++;
-    else cart.push({ id, quantity: 1 });
+    if (item) {
+        item.quantity++;
+    } else {
+        cart.push({ id, quantity: 1 });
+    }
     localStorage.setItem('cart', JSON.stringify(cart));
     showToast(`${p.name} added!`, 'success');
+
+    // Update all "Add to Cart" buttons for this product
+    document.querySelectorAll(`.add-to-cart-btn[data-id="${id}"]`).forEach(btn => {
+        const qty = cart.find(i => i.id === id).quantity;
+        btn.textContent = `Added (${qty})`;
+        btn.classList.replace('btn-outline-primary', 'btn-success');
+        
+        // Insert "Go to Cart" button if not exists
+        if (!btn.parentElement.querySelector('a[href="/cart.html"]')) {
+            const goToCart = document.createElement('a');
+            goToCart.href = '/cart.html';
+            goToCart.className = 'btn btn-primary';
+            goToCart.textContent = 'Go to Cart';
+            btn.parentElement.appendChild(goToCart);
+        }
+    });
+
     if (document.getElementById('cart-items')) displayCart();
 }
 
+// === CART DISPLAY ===
 function displayCart() {
     const container = document.getElementById('cart-items');
     if (!container) return;
@@ -256,6 +288,7 @@ function displayCart() {
     calculateTotal(subtotal);
 }
 
+// === UPDATE & REMOVE FROM CART ===
 function updateQuantity(id, qty) {
     qty = parseInt(qty);
     if (qty < 1) return showToast('Invalid quantity.', 'error');
@@ -264,6 +297,7 @@ function updateQuantity(id, qty) {
         item.quantity = qty;
         localStorage.setItem('cart', JSON.stringify(cart));
         displayCart();
+        renderAll(); // Update Add to Cart buttons
     }
 }
 
@@ -273,8 +307,10 @@ function removeFromCart(id) {
     localStorage.setItem('cart', JSON.stringify(cart));
     showToast(`${p?.name || 'Item'} removed.`, 'success');
     displayCart();
+    renderAll(); // Update Add to Cart buttons
 }
 
+// === CALCULATE TOTAL ===
 function calculateTotal(subtotal) {
     const state = document.getElementById('state')?.value;
     const pickup = document.getElementById('pickup')?.checked;
@@ -333,7 +369,7 @@ document.getElementById('images')?.addEventListener('change', e => {
     });
 });
 
-// === ADMIN: SAVE PRODUCT (Cloudinary + Supabase) ===
+// === ADMIN: SAVE PRODUCT ===
 document.getElementById('save-product')?.addEventListener('click', async () => {
     const id = document.getElementById('edit-id').value;
     const name = document.getElementById('name').value.trim();
@@ -351,7 +387,6 @@ document.getElementById('save-product')?.addEventListener('click', async () => {
 
     let images = JSON.parse(existingImages);
 
-    // Upload to Cloudinary
     for (let file of files) {
         if (file.size > 1 * 1024 * 1024) {
             showToast('Image too large (max 1MB)', 'error');
@@ -520,7 +555,15 @@ function showConfirmToast(message, onConfirm, onCancel) {
 if (window.location.pathname.includes('admin.html')) {
     document.addEventListener('DOMContentLoaded', checkAdminAuth);
 } else {
-    document.addEventListener('DOMContentLoaded', loadProducts);
+    document.addEventListener('DOMContentLoaded', () => {
+        loadProducts();
+        // Re-attach Add to Cart buttons after render
+        setTimeout(() => {
+            document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+                btn.onclick = () => addToCart(parseInt(btn.dataset.id));
+            });
+        }, 500);
+    });
 }
 
 if (document.getElementById('state')) {
