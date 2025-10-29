@@ -102,7 +102,7 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
             : product.description;
 
         if (isFeatured) {
-            item.className = 'col-6 col-md-4';
+            item.className = 'col-12 col-sm-6 col-md-4';
             item.innerHTML = `
                 <div class="featured-card card h-100">
                     <div class="product-image-wrapper position-relative bg-white rounded overflow-hidden" style="height:140px;">

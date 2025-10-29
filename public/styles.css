@@ -230,7 +230,7 @@ footer { font-size: 0.9rem; }
     }
 }
 
-/* === FEATURED PRODUCTS – MOBILE PERFECT === */
+/* === FEATURED PRODUCTS – PERFECT ON MOBILE & DESKTOP === */
 #featured-products .featured-card {
     border: 1px solid #e0e0e0 !important;
     border-radius: 12px !important;
@@ -248,24 +248,160 @@ footer { font-size: 0.9rem; }
     box-shadow: 0 8px 20px rgba(0,0,0,0.12) !important;
 }
 
+/* Image Wrapper */
 #featured-products .product-image-wrapper {
     background: #fff !important;
     border-bottom: 1px solid #f0f0f0;
     position: relative;
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 #featured-products .product-image-wrapper img {
-    transition: transform 0.3s;
-    width: 100%;
-    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
     object-fit: contain;
-    padding: 0.5rem;
+    padding: 0.75rem;
+    transition: transform 0.3s;
 }
 
 #featured-products .featured-card:hover .product-image-wrapper img {
     transform: scale(1.05);
 }
 
+/* +Badge – Only if >1 image */
+#featured-products .product-image-wrapper span {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: #0d6efd;
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    z-index: 1;
+    min-width: 28px;
+    text-align: center;
+}
+
+/* Card Body */
+#featured-products .featured-card .card-body {
+    padding: 1rem !important;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+/* Title */
+#featured-products .card-title {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    margin-bottom: 0.5rem !important;
+    line-height: 1.3 !important;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Type */
+#featured-products .text-muted {
+    font-size: 0.8rem !important;
+    margin-bottom: 0.5rem !important;
+}
+
+/* Price */
+#featured-products .price {
+    font-size: 1.1rem !important;
+    font-weight: 700 !important;
+    color: #198754 !important;
+    margin-bottom: 0.75rem !important;
+}
+
+#featured-products .price del {
+    color: #999 !important;
+    font-weight: 400 !important;
+    font-size: 0.85rem !important;
+}
+
+/* Description */
+#featured-products .desc-text {
+    font-size: 0.8rem !important;
+    color: #666 !important;
+    margin-bottom: 0.75rem !important;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex-grow: 1;
+}
+
+/* View More */
+#featured-products .view-more {
+    font-size: 0.75rem !important;
+    padding: 0 !important;
+}
+
+/* Buttons */
+#featured-products .btn {
+    font-size: 0.85rem !important;
+    padding: 0.5rem 0.75rem !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+}
+
+#featured-products .btn-success {
+    background: #198754 !important;
+    border: none !important;
+}
+
+#featured-products .btn-primary {
+    background: #0d6efd !important;
+    border: none !important;
+}
+
+/* === RESPONSIVE TWEAKS === */
+@media (max-width: 576px) {
+    #featured-products .product-image-wrapper {
+        height: 130px !important;
+    }
+    #featured-products .card-body {
+        padding: 0.75rem !important;
+    }
+    #featured-products .card-title {
+        font-size: 0.85rem !important;
+    }
+    #featured-products .text-muted,
+    #featured-products .desc-text {
+        font-size: 0.7rem !important;
+    }
+    #featured-products .price {
+        font-size: 0.95rem !important;
+    }
+    #featured-products .btn {
+        font-size: 0.75rem !important;
+        padding: 0.4rem 0.6rem !important;
+    }
+    #featured-products .col-12 {
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+    }
+}
+
+@media (min-width: 768px) {
+    #featured-products .product-image-wrapper {
+        height: 180px !important;
+    }
+}
+
+@media (min-width: 992px) {
+    #featured-products .product-image-wrapper {
+        height: 200px !important;
+    }
+}
 /* +Badge */
 #featured-products .product-image-wrapper span {
     position: absolute;
