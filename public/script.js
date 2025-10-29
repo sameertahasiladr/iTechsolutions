@@ -733,3 +733,47 @@ ${issue}
         document.getElementById('service-form').classList.remove('was-validated');
     }, 1000);
 });
+// === HOMEPAGE SERVICE BOOKING ===
+document.addEventListener('home-service-book', () => {
+    const name = document.getElementById('home-name')?.value.trim();
+    const address = document.getElementById('home-address')?.value.trim();
+    const product = document.getElementById('home-product')?.value;
+    const model = document.getElementById('home-model')?.value.trim();
+    const issue = document.getElementById('home-issue')?.value.trim();
+
+    if (!name || !address || !product || !issue) {
+        showToast('Please fill all required fields.', 'error');
+        return;
+    }
+
+    const modelLine = model ? `\nModel: ${model}` : '';
+
+    const message = `
+*SERVICE REQUEST - iTech Solutions*
+
+*Customer Details*
+Name: ${name}
+Address: ${address}${modelLine}
+Device: ${product}
+
+*Problem Description*
+${issue}
+
+*Service Info*
+• Free Diagnosis
+• Fast Repair (Same Day if Possible)
+• 30 Days Warranty
+• Doorstep Service (Goa)
+
+*Note:* Technician will call you within 1 hour.
+`.trim();
+
+    const encoded = encodeURIComponent(message);
+    window.open(`https://wa.me/${PHONE_NUMBER}?text=${encoded}`, '_blank');
+    showToast('Service request sent!', 'success');
+
+    setTimeout(() => {
+        document.getElementById('home-service-form').reset();
+        document.getElementById('home-service-form').classList.remove('was-validated');
+    }, 1000);
+});

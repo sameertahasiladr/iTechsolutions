@@ -18,11 +18,11 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                     <li class="nav-item"><a class="nav-link" href="/index.html"><i class="bi bi-house me-2"></i>Home</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="/about.html"><i class="bi bi-info-circle me-2"></i>About Us</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/index.html"><i class="bi bi-house me-2"></i>Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/about.html"><i class="bi bi-info-circle me-2"></i>About Us</a></li>
                     <li class="nav-item"><a class="nav-link" href="/products.html"><i class="bi bi-laptop me-2"></i>Products</a></li>
                     <li class="nav-item"><a class="nav-link" href="/cart.html"><i class="bi bi-cart me-2"></i>Cart</a></li>
-                     <li class="nav-item"><a class="nav-link" href="/service.html"><i class="bi bi-tools me-2"></i>Service</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/service.html"><i class="bi bi-tools me-2"></i>Service</a></li>
                     <li class="nav-item"><a class="nav-link" href="/admin.html"><i class="bi bi-gear me-2"></i>Admin</a></li>
                 </ul>
             </div>
@@ -30,25 +30,27 @@
     </nav>
 
     <main class="p-4">
-       <section class="hero text-center bg-primary text-white py-5 mb-5">
-    <div class="container-xl">
-        <h1 class="display-4 fw-bold">Welcome to iTech Solutions</h1>
-        <p class="lead mb-4">Discover premium new and refurbished laptops, mobiles, printers, and PCs at unbeatable prices.</p>
-        
-        <input type="text" id="home-search" placeholder="Search for laptops, mobiles, printers..." class="form-control w-75 w-md-50 mx-auto mb-4">
+        <!-- HERO SECTION -->
+        <section class="hero text-center bg-primary text-white py-5 mb-5">
+            <div class="container-xl">
+                <h1 class="display-4 fw-bold">Welcome to iTech Solutions</h1>
+                <p class="lead mb-4">Discover premium new and refurbished laptops, mobiles, printers, and PCs at unbeatable prices.</p>
+                
+                <input type="text" id="home-search" placeholder="Search for laptops, mobiles, printers..." class="form-control w-75 w-md-50 mx-auto mb-4">
 
-        <!-- BUTTONS SIDE BY SIDE -->
-        <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center align-items-center">
-            <a href="/products.html" class="btn btn-light btn-lg px-4">
-                <i class="bi bi-laptop me-2"></i> Shop Now
-            </a>
-            <a href="/service.html" class="btn btn-outline-light btn-lg px-4">
-                <i class="bi bi-tools me-2"></i> Book Service
-            </a>
-        </div>
-    </div>
-</section>
+                <!-- BUTTONS SIDE BY SIDE -->
+                <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center align-items-center">
+                    <a href="/products.html" class="btn btn-light btn-lg px-4">
+                        <i class="bi bi-laptop me-2"></i> Shop Now
+                    </a>
+                    <a href="#service-booking" class="btn btn-outline-light btn-lg px-4">
+                        <i class="bi bi-tools me-2"></i> Book Service
+                    </a>
+                </div>
+            </div>
+        </section>
 
+        <!-- FEATURED PRODUCTS -->
         <section class="featured-products mb-5">
             <div class="container-xl">
                 <h2 class="h2 fw-bold text-center mb-4">Featured Products</h2>
@@ -59,6 +61,7 @@
             </div>
         </section>
 
+        <!-- CATEGORIES -->
         <section class="categories mb-5">
             <div class="container-xl">
                 <h2 class="h2 fw-bold text-center mb-4">Shop by Category</h2>
@@ -107,6 +110,7 @@
             </div>
         </section>
 
+        <!-- WHY US -->
         <section class="why-us mb-5">
             <div class="container-xl">
                 <h2 class="h2 fw-bold text-center mb-4">Why Choose iTech Solutions?</h2>
@@ -142,6 +146,7 @@
             </div>
         </section>
 
+        <!-- ABOUT US -->
         <section class="about mb-5">
             <div class="container-xl">
                 <h2 class="h2 fw-bold text-center mb-4">About Us</h2>
@@ -152,6 +157,78 @@
             </div>
         </section>
 
+        <!-- SERVICE BOOKING FORM (ON HOMEPAGE) -->
+        <section class="service-booking mb-5" id="service-booking">
+            <div class="container-xl">
+                <h2 class="h2 fw-bold text-center mb-4">
+                    <i class="bi bi-tools text-primary me-2"></i>Book a Service
+                </h2>
+                <p class="text-center text-muted mb-5">Laptop • Mobile • Printer • Desktop • CCTV • Software Issues</p>
+
+                <div class="row justify-content-center">
+                    <div class="col-12 col-md-8 col-lg-6">
+                        <div class="card shadow border-0">
+                            <div class="card-body p-4 p-md-5">
+                                <form id="home-service-form" class="needs-validation" novalidate>
+                                    <div class="row g-3">
+                                        <!-- Name -->
+                                        <div class="col-12">
+                                            <label for="home-name" class="form-label fw-semibold">Full Name <span class="text-danger">*</span></label>
+                                            <input type="text" id="home-name" class="form-control form-control-lg" placeholder="e.g. Rahul Sharma" required>
+                                            <div class="invalid-feedback">Please enter your name.</div>
+                                        </div>
+
+                                        <!-- Address -->
+                                        <div class="col-12">
+                                            <label for="home-address" class="form-label fw-semibold">Full Address <span class="text-danger">*</span></label>
+                                            <input type="text" id="home-address" class="form-control form-control-lg" placeholder="House no., Mardol, Goa" required>
+                                            <div class="invalid-feedback">Please enter your address.</div>
+                                        </div>
+
+                                        <!-- Product -->
+                                        <div class="col-12 col-md-6">
+                                            <label for="home-product" class="form-label fw-semibold">Device / Issue <span class="text-danger">*</span></label>
+                                            <select id="home-product" class="form-select form-select-lg" required>
+                                                <option value="" disabled selected>Select</option>
+                                                <option value="Laptop">Laptop</option>
+                                                <option value="Mobile Phone">Mobile Phone</option>
+                                                <option value="Printer">Printer</option>
+                                                <option value="Desktop PC">Desktop PC</option>
+                                                <option value="CCTV System">CCTV System</option>
+                                                <option value="Software Crash / App Issue">Software Crash / App Issue</option>
+                                            </select>
+                                            <div class="invalid-feedback">Please select a device.</div>
+                                        </div>
+
+                                        <!-- Model -->
+                                        <div class="col-12 col-md-6">
+                                            <label for="home-model" class="form-label fw-semibold">Brand & Model</label>
+                                            <input type="text" id="home-model" class="form-control form-control-lg" placeholder="e.g. Dell XPS 13">
+                                        </div>
+
+                                        <!-- Issue -->
+                                        <div class="col-12">
+                                            <label for="home-issue" class="form-label fw-semibold">Describe the Problem <span class="text-danger">*</span></label>
+                                            <textarea id="home-issue" class="form-control form-control-lg" rows="4" placeholder="e.g. Laptop not charging, screen flickering..." required></textarea>
+                                            <div class="invalid-feedback">Please describe the issue.</div>
+                                        </div>
+
+                                        <!-- Submit -->
+                                        <div class="col-12">
+                                            <button type="button" id="home-book-whatsapp" class="btn btn-success btn-lg w-100 shadow-sm">
+                                                <i class="bi bi-whatsapp me-2"></i>Send via WhatsApp
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONTACT -->
         <section class="contact mb-5">
             <div class="container-xl text-center">
                 <h2 class="h2 fw-bold mb-4">Get in Touch</h2>
@@ -163,12 +240,31 @@
             </div>
         </section>
 
+        <!-- FOOTER -->
         <footer class="text-center py-4 mt-5 border-top">
-            <p>© 2025 iTech Solutions. All rights reserved.</p>
+            <p class="mb-0 text-muted small">© 2025 iTech Solutions. All rights reserved.</p>
         </footer>
     </main>
 
+    <!-- BOOTSTRAP + SCRIPT -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/script.js"></script>
+
+    <!-- FORM VALIDATION + WHATSAPP -->
+    <script>
+        (() => {
+            'use strict';
+            const form = document.getElementById('home-service-form');
+            form.addEventListener('submit', e => e.preventDefault());
+
+            document.getElementById('home-book-whatsapp')?.addEventListener('click', () => {
+                if (form.checkValidity()) {
+                    document.dispatchEvent(new CustomEvent('home-service-book'));
+                } else {
+                    form.classList.add('was-validated');
+                }
+            });
+        })();
+    </script>
 </body>
 </html>
