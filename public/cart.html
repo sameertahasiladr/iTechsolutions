@@ -18,11 +18,11 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="/index.html"><i class="bi bi-house me-2"></i>Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/about.html"><i class="bi bi-info-circle me-2"></i>About Us</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/products.html"><i class="bi bi-laptop me-2"></i>Products</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="/cart.html"><i class="bi bi-cart me-2"></i>Cart</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/admin.html"><i class="bi bi-gear me-2"></i>Admin</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/about.html">About Us</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/products.html">Products</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/cart.html">Cart</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/admin.html">Admin</a></li>
                 </ul>
             </div>
         </div>
@@ -34,60 +34,69 @@
             <div class="cart-items list-group" id="cart-items"></div>
             <div class="shipping bg-white p-4 rounded shadow mt-4">
                 <h2 class="h4 fw-semibold mb-3">Shipping Details</h2>
-                <form class="d-flex flex-wrap gap-3 mb-3">
-                    <input type="text" id="address" placeholder="Enter your address" class="form-control" required>
-                    <select id="state" class="form-select" required>
-                        <option value="">Select State / UT</option>
-                        <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
-                        <option value="Andhra Pradesh">Andhra Pradesh</option>
-                        <option value="Arunachal Pradesh">Arunachal Pradesh</option>
-                        <option value="Assam">Assam</option>
-                        <option value="Bihar">Bihar</option>
-                        <option value="Chandigarh">Chandigarh</option>
-                        <option value="Chhattisgarh">Chhattisgarh</option>
-                        <option value="Dadra and Nagar Haveli and Daman and Diu">Dadra and Nagar Haveli and Daman and Diu</option>
-                        <option value="Delhi">Delhi</option>
-                        <option value="Goa">Goa</option>
-                        <option value="Gujarat">Gujarat</option>
-                        <option value="Haryana">Haryana</option>
-                        <option value="Himachal Pradesh">Himachal Pradesh</option>
-                        <option value="Jammu and Kashmir">Jammu and Kashmir</option>
-                        <option value="Jharkhand">Jharkhand</option>
-                        <option value="Karnataka">Karnataka</option>
-                        <option value="Kerala">Kerala</option>
-                        <option value="Ladakh">Ladakh</option>
-                        <option value="Lakshadweep">Lakshadweep</option>
-                        <option value="Madhya Pradesh">Madhya Pradesh</option>
-                        <option value="Maharashtra">Maharashtra</option>
-                        <option value="Manipur">Manipur</option>
-                        <option value="Meghalaya">Meghalaya</option>
-                        <option value="Mizoram">Mizoram</option>
-                        <option value="Nagaland">Nagaland</option>
-                        <option value="Odisha">Odisha</option>
-                        <option value="Puducherry">Puducherry</option>
-                        <option value="Punjab">Punjab</option>
-                        <option value="Rajasthan">Rajasthan</option>
-                        <option value="Sikkim">Sikkim</option>
-                        <option value="Tamil Nadu">Tamil Nadu</option>
-                        <option value="Telangana">Telangana</option>
-                        <option value="Tripura">Tripura</option>
-                        <option value="Uttar Pradesh">Uttar Pradesh</option>
-                        <option value="Uttarakhand">Uttarakhand</option>
-                        <option value="West Bengal">West Bengal</option>
-                    </select>
+
+                <!-- NAME + ADDRESS + STATE -->
+                <form class="d-flex flex-column flex-md-row flex-wrap gap-3 mb-3">
+                    <div class="flex-fill">
+                        <input type="text" id="customer-name" placeholder="Your Full Name" class="form-control" required>
+                    </div>
+                    <div class="flex-fill">
+                        <input type="text" id="address" placeholder="Enter your address" class="form-control" required>
+                    </div>
+                    <div class="flex-fill">
+                        <select id="state" class="form-select" required>
+                            <option value="">Select State / UT</option>
+                            <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
+                            <option value="Andhra Pradesh">Andhra Pradesh</option>
+                            <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                            <option value="Assam">Assam</option>
+                            <option value="Bihar">Bihar</option>
+                            <option value="Chandigarh">Chandigarh</option>
+                            <option value="Chhattisgarh">Chhattisgarh</option>
+                            <option value="Dadra and Nagar Haveli and Daman and Diu">Dadra and Nagar Haveli and Daman and Diu</option>
+                            <option value="Delhi">Delhi</option>
+                            <option value="Goa">Goa</option>
+                            <option value="Gujarat">Gujarat</option>
+                            <option value="Haryana">Haryana</option>
+                            <option value="Himachal Pradesh">Himachal Pradesh</option>
+                            <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+                            <option value="Jharkhand">Jharkhand</option>
+                            <option value="Karnataka">Karnataka</option>
+                            <option value="Kerala">Kerala</option>
+                            <option value="Ladakh">Ladakh</option>
+                            <option value="Lakshadweep">Lakshadweep</option>
+                            <option value="Madhya Pradesh">Madhya Pradesh</option>
+                            <option value="Maharashtra">Maharashtra</option>
+                            <option value="Manipur">Manipur</option>
+                            <option value="Meghalaya">Meghalaya</option>
+                            <option value="Mizoram">Mizoram</option>
+                            <option value="Nagaland">Nagaland</option>
+                            <option value="Odisha">Odisha</option>
+                            <option value="Puducherry">Puducherry</option>
+                            <option value="Punjab">Punjab</option>
+                            <option value="Rajasthan">Rajasthan</option>
+                            <option value="Sikkim">Sikkim</option>
+                            <option value="Tamil Nadu">Tamil Nadu</option>
+                            <option value="Telangana">Telangana</option>
+                            <option value="Tripura">Tripura</option>
+                            <option value="Uttar Pradesh">Uttar Pradesh</option>
+                            <option value="Uttarakhand">Uttarakhand</option>
+                            <option value="West Bengal">West Bengal</option>
+                        </select>
+                    </div>
                 </form>
 
-                <!-- Goa Pickup Option -->
+                <!-- Goa Pickup -->
                 <div class="goa-pickup d-none mb-3 card p-3 border-primary" id="goa-pickup">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="pickup">
                         <label class="form-check-label text-success fw-semibold" for="pickup">
-                            <i class="bi bi-truck me-1"></i> Pickup from dealer (Free)
+                            Pickup from dealer (Free)
                         </label>
                     </div>
                 </div>
 
-                <!-- Dynamic Shipping Info -->
+                <!-- Shipping Info -->
                 <p class="text-muted mb-1">
                     Shipping Charge: 
                     <strong>
@@ -99,10 +108,10 @@
 
                 <div class="order-buttons d-flex flex-wrap gap-3 justify-content-center mt-4">
                     <button id="order-call" class="btn btn-outline-primary">
-                        <i class="bi bi-telephone"></i> Order via Call
+                        Order via Call
                     </button>
                     <button id="order-whatsapp" class="btn btn-success">
-                        <i class="bi bi-whatsapp"></i> Order via WhatsApp
+                        Order via WhatsApp
                     </button>
                 </div>
             </div>
@@ -111,8 +120,7 @@
         <footer class="text-center py-4 mt-5 border-top">
             <p>© 2025 iTech Solutions. All rights reserved.</p>
         </footer>
-    </main>
-
+    </main> 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/script.js"></script>
 </body>

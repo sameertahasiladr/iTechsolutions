@@ -1,4 +1,4 @@
-// script.js – FINAL: Fully Responsive + All Bugs Fixed
+// script.js – FINAL: Fully Responsive + Professional Dealer Message
 const PHONE_NUMBER = '9545690700';
 const API_BASE = '/api';
 const CLOUDINARY_CLOUD = 'ddktvfhsb';
@@ -370,25 +370,137 @@ function calculateTotal(subtotal) {
     noteEl.textContent = note;
     totalEl.textContent = subtotal + shipping;
 }
-// === ORDER BUTTONS ===
-document.getElementById('order-call')?.addEventListener('click', () => {
-    const addr = document.getElementById('address')?.value.trim();
-    const state = document.getElementById('state')?.value;
-    if (!addr || !state || cart.length === 0) return showToast('Fill details.', 'error');
-    window.location.href = `tel:${PHONE_NUMBER}`;
-});
 
+// === ORDER VIA WHATSAPP — PROFESSIONAL DEALER MESSAGE ===
 document.getElementById('order-whatsapp')?.addEventListener('click', () => {
     const addr = document.getElementById('address')?.value.trim();
     const state = document.getElementById('state')?.value;
-    if (!addr || !state || cart.length === 0) return showToast('Fill details.', 'error');
-    const details = cart.map(i => {
-        const p = products.find(x => x.id === i.id);
-        return `${p.name} x ${i.quantity} (${(p.discount || p.price) * i.quantity} Rs)`;
+    const pickup = state === 'Goa' && document.getElementById('pickup')?.checked;
+    const total = document.getElementById('total')?.textContent;
+
+    if (!addr || !state || cart.length === 0) {
+        showToast('Please fill address & select state.', 'error');
+        return;
+    }
+
+    const items = cart.map(item => {
+        const p = products.find(x => x.id === item.id);
+        const price = p.discount || p.price;
+        return `• ${p.name} × ${item.quantity} = ${price * item.quantity} Rs`;
     }).join('\n');
-    const pickup = state === 'Goa' && document.getElementById('pickup')?.checked ? ' (Pickup)' : '';
-    const msg = `Order:\n${details}\n\nAddress: ${addr}, ${state}${pickup}\nTotal: ${document.getElementById('total').textContent} Rs`;
-    window.open(`https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+
+    const shipping = document.getElementById('shipping-charge').textContent;
+    const shippingNote = document.getElementById('shipping-note').textContent;
+
+    const message = `
+*NEW ORDER - iTech Solutions*
+
+*Customer Details*
+Name: [Enter Name]
+Phone: [Auto-filled on WhatsApp]
+Address: ${addr}, ${state}
+Delivery: ${pickup ? 'Pickup (Free)' : `Delivery - ${shippingNote}`}
+
+*Order Items*
+${items}
+
+*Pricing*
+Subtotal: ${total - shipping} Rs
+Shipping: ${shipping} Rs ${shippingNote}
+*Total: ${total} Rs*
+
+*Note:* Please confirm stock & delivery within 24 hours.
+`.trim();
+
+    const encoded = encodeURIComponent(message);
+    window.open(`https://wa.me/${PHONE_NUMBER}?text=${encoded}`, '_blank');
+});
+
+// === ORDER VIA WHATSAPP — NOW INCLUDES NAME ===
+document.getElementById('order-whatsapp')?.addEventListener('click', () => {
+    const name = document.getElementById('customer-name')?.value.trim();
+    const addr = document.getElementById('address')?.value.trim();
+    const state = document.getElementById('state')?.value;
+    const pickup = state === 'Goa' && document.getElementById('pickup')?.checked;
+    const total = document.getElementById('total')?.textContent;
+
+    if (!name || !addr || !state || cart.length === 0) {
+        showToast('Please fill name, address & state.', 'error');
+        return;
+    }
+
+    const items = cart.map(item => {
+        const p = products.find(x => x.id === item.id);
+        const price = p.discount || p.price;
+        return `• ${p.name} × ${item.quantity} = ${price * item.quantity} Rs`;
+    }).join('\n');
+
+    const shipping = document.getElementById('shipping-charge').textContent;
+    const shippingNote = document.getElementById('shipping-note').textContent;
+
+    const message = `
+*NEW ORDER - iTech Solutions*
+
+*Customer Details*
+Name: ${name}
+Phone: [Auto-filled on WhatsApp]
+Address: ${addr}, ${state}
+Delivery: ${pickup ? 'Pickup (Free)' : `Delivery - ${shippingNote}`}
+
+*Order Items*
+${items}
+
+*Pricing*
+Subtotal: ${total - shipping} Rs
+Shipping: ${shipping} Rs ${shippingNote}
+*Total: ${total} Rs*
+
+*Note:* Please confirm stock & delivery within 24 hours.
+`.trim();
+
+    const encoded = encodeURIComponent(message);
+    window.open(`https://wa.me/${PHONE_NUMBER}?text=${encoded}`, '_blank');
+});
+
+// === ORDER VIA CALL — NAME INCLUDED + COPIED ===
+document.getElementById('order-call')?.addEventListener('click', () => {
+    const name = document.getElementById('customer-name')?.value.trim();
+    const addr = document.getElementById('address')?.value.trim();
+    const state = document.getElementById('state')?.value;
+    const pickup = state === 'Goa' && document.getElementById('pickup')?.checked;
+    const total = document.getElementById('total')?.textContent;
+
+    if (!name || !addr || !state || cart.length === 0) {
+        showToast('Please fill name, address & state.', 'error');
+        return;
+    }
+
+    const items = cart.map(item => {
+        const p = products.find(x => x.id === item.id);
+        return `${p.name} x${item.quantity}`;
+    }).join(', ');
+
+    const script = `
+NEW ORDER - iTech Solutions
+
+Customer: ${name}
+Address: ${addr}, ${state}
+Delivery: ${pickup ? 'PICKUP (FREE)' : 'DELIVERY'}
+
+Items: ${items}
+
+Total: ${total} Rs
+
+Please confirm stock and arrange delivery.
+`.trim();
+
+    navigator.clipboard.writeText(script).then(() => {
+        showToast('Order script copied! Opening call...', 'success');
+        setTimeout(() => window.location.href = `tel:${PHONE_NUMBER}`, 800);
+    }).catch(() => {
+        showToast('Opening call...', 'success');
+        window.location.href = `tel:${PHONE_NUMBER}`;
+    });
 });
 
 // === ADMIN: IMAGE PREVIEW ===
