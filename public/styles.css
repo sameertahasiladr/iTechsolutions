@@ -1,4 +1,4 @@
-/* styles.css – 100% RESPONSIVE + BUG-FREE */
+/* styles.css – FULLY RESPONSIVE + ALL PAGES */
 * {
     margin: 0;
     padding: 0;
@@ -68,7 +68,16 @@ main {
 .d-grid .btn { width: 100%; }
 .d-md-flex .btn { min-width: 80px; }
 
-/* Cart */
+/* Cart Remove Button */
+.remove-cart-btn {
+    white-space: nowrap;
+    font-size: 0.8rem;
+}
+.remove-cart-btn i {
+    font-size: 0.9rem;
+}
+
+/* Cart Layout */
 #cart-items .list-group-item {
     display: flex;
     flex-wrap: wrap;
@@ -95,7 +104,7 @@ main {
     .filters > * { width: 100% !important; }
 }
 
-/* Toast */
+/* Toast Container */
 #toast-container {
     position: fixed;
     top: 1rem;
@@ -103,6 +112,16 @@ main {
     z-index: 1100;
     max-width: 90%;
 }
+@media (max-width: 576px) {
+    #toast-container {
+        top: 1rem;
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+        width: 90%;
+    }
+}
+
 .toast {
     min-width: 200px;
     max-width: 300px;
@@ -117,6 +136,21 @@ main {
 .toast.show { opacity: 1; }
 .toast.success { background: #28a745; }
 .toast.error { background: #dc3545; }
+
+/* Confirm Toast */
+.toast.confirm {
+    background-color: #fff !important;
+    color: #212529 !important;
+    border: 1px solid #dc3545 !important;
+}
+.toast.confirm .btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+.toast.confirm .btn-outline-secondary {
+    border-color: #6c757d;
+    color: #6c757d;
+}
 
 /* Responsive Text */
 .fs-7 { font-size: 0.75rem; }

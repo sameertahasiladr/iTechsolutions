@@ -12,24 +12,23 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
-            <a class="navbar-brand fw-bold text-uppercase" href="#">iTech Solutions</a>
+            <a class="navbar-brand fw-bold text-uppercase" href="/index.html">iTech Solutions</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="/index.html">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/about.html">About Us</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/products.html">Products</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/cart.html">Cart</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="/admin.html">Admin</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/index.html"><i class="bi bi-house me-2"></i>Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/about.html"><i class="bi bi-info-circle me-2"></i>About Us</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/products.html"><i class="bi bi-laptop me-2"></i>Products</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/cart.html"><i class="bi bi-cart me-2"></i>Cart</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/admin.html"><i class="bi bi-gear me-2"></i>Admin</a></li>
                 </ul>
             </div>
         </div>
     </nav>
 
     <main class="p-4">
-        <!-- ADMIN LOGIN FORM -->
         <section id="admin-login" class="container-fluid">
             <div class="row justify-content-center align-items-center min-vh-100">
                 <div class="col-md-4">
@@ -48,9 +47,7 @@
                                     <label class="form-label">Password</label>
                                     <input type="password" id="admin-password" class="form-control" placeholder="Enter password" required>
                                 </div>
-                                <button type="submit" class="btn btn-primary w-100">
-                                    Login
-                                </button>
+                                <button type="submit" class="btn btn-primary w-100">Login</button>
                             </form>
                         </div>
                     </div>
@@ -58,22 +55,18 @@
             </div>
         </section>
 
-        <!-- ADMIN PANEL -->
         <section id="admin-panel" class="container-fluid d-none">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h1 class="display-4 fw-bold text-primary">Admin Panel</h1>
                 <button id="admin-logout" class="btn btn-outline-danger">Logout</button>
             </div>
             <div class="add-product bg-white p-3 rounded shadow mb-4">
-                <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#productModal">
-                    Add Product
-                </button>
+                <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#productModal">Add Product</button>
             </div>
             <div class="admin-product-list list-group" id="admin-product-list"></div>
         </section>
     </main>
 
-    <!-- Product Modal -->
     <div class="modal fade" id="productModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -83,12 +76,11 @@
                 </div>
                 <div class="modal-body">
                     <input type="hidden" id="edit-id">
-                    <!-- Inside Product Modal, after <input type="hidden" id="edit-id"> -->
                     <input type="hidden" id="existing-images" value="[]">
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Product Name</label>
-                            <input type="text" id="name" placeholder="Product Name" class="form-control" required>
+                            <input type="text" id="name" class="form-control" required>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Type</label>
@@ -104,16 +96,16 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Price (Rs)</label>
-                            <input type="number" id="price" placeholder="Original Price" class="form-control" required>
+                            <input type="number" id="price" class="form-control" required>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Discount Price (Optional)</label>
-                            <input type="number" id="discount" placeholder="Discounted Price" class="form-control">
+                            <input type="number" id="discount" class="form-control">
                         </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Description</label>
-                        <textarea id="description" placeholder="Product description" class="form-control" rows="3" required></textarea>
+                        <textarea id="description" class="form-control" rows="3" required></textarea>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Product Images</label>
@@ -121,7 +113,6 @@
                         <small class="text-muted">Max 1MB per image</small>
                     </div>
                     <div id="image-preview" class="d-flex flex-wrap gap-2"></div>
-                    <input type="hidden" id="existing-images">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>

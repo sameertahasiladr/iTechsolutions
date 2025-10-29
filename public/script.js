@@ -80,7 +80,7 @@ function renderAll() {
     if (document.getElementById('cart-items')) displayCart();
 }
 
-// === DISPLAY PRODUCTS (FULLY RESPONSIVE) ===
+// === DISPLAY PRODUCTS (RESPONSIVE) ===
 function displayProducts(container, list, isAdmin = false, isFeatured = false) {
     if (!container) return;
     container.innerHTML = '';
@@ -214,7 +214,6 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
         container.appendChild(item);
     });
 
-    // View More / Less
     document.querySelectorAll('.view-more').forEach(link => {
         link.onclick = e => {
             e.preventDefault();
@@ -267,7 +266,7 @@ function addToCart(id) {
     if (document.getElementById('cart-items')) displayCart();
 }
 
-// === CART DISPLAY ===
+// === CART DISPLAY (MOBILE REMOVE BUTTON FIXED) ===
 function displayCart() {
     const container = document.getElementById('cart-items');
     if (!container) return;
@@ -277,37 +276,47 @@ function displayCart() {
     cart = cart.filter(item => products.find(p => p.id === item.id));
     localStorage.setItem('cart', JSON.stringify(cart));
 
+    if (cart.length === 0) {
+        container.innerHTML = '<div class="text-center text-muted py-4">Your cart is empty.</div>';
+        calculateTotal(0);
+        return;
+    }
+
     cart.forEach(item => {
         const p = products.find(x => x.id === item.id);
         const img = (p.images?.[0]) || 'https://picsum.photos/100?random=0';
         const cartItem = document.createElement('div');
-        cartItem.className = 'list-group-item p-3';
+        cartItem.className = 'list-group-item p-3 border-bottom';
         cartItem.innerHTML = `
             <div class="row align-items-center g-3">
-                <div class="col-3 col-md-2">
-                    <img src="${img}" alt="${p.name}" class="img-fluid rounded" style="height:80px;object-fit:contain;background:#fff;">
+                <div class="col-4 col-md-3 col-lg-2">
+                    <img src="${img}" alt="${p.name}" class="img-fluid rounded" style="height:80px;object-fit:contain;background:#fff;border:1px solid #dee2e6;">
                 </div>
-                <div class="col-9 col-md-10">
-                    <h6 class="mb-1">${p.name}</h6>
+                <div class="col-8 col-md-9 col-lg-10">
+                    <h6 class="mb-1 fw-semibold">${p.name}</h6>
                     <p class="mb-1 small text-muted">
-                        Price: ${p.discount ? `<strong class="text-success">${p.discount} Rs</strong> <del>${p.price} Rs</del>` : `<strong>${p.price} Rs</strong>`}
+                        Price: ${p.discount ? `<strong class="text-success">${p.discount} Rs</strong> <del class="text-muted small">${p.price} Rs</del>` : `<strong>${p.price} Rs</strong>`}
                     </p>
-                    <div class="d-flex align-items-center gap-2">
-                        <input type="number" value="${item.quantity}" min="1" class="form-control form-control-sm w-auto">
-                        <button class="btn btn-outline-danger btn-sm">Remove</button>
+                    <div class="d-flex flex-column flex-md-row gap-2 align-items-start align-items-md-center">
+                        <div class="d-flex align-items-center gap-2">
+                            <label class="small text-muted mb-0">Qty:</label>
+                            <input type="number" value="${item.quantity}" min="1" class="form-control form-control-sm" style="width:60px;">
+                        </div>
+                        <button class="btn btn-outline-danger btn-sm remove-cart-btn">
+                            <i class="bi bi-trash"></i> <span class="d-none d-sm-inline">Remove</span>
+                        </button>
                     </div>
                 </div>
             </div>
         `;
-        cartItem.querySelector('input').onchange = e => updateQuantity(item.id, e.target.value);
-        cartItem.querySelector('button').onclick = () => removeFromCart(item.id);
+        const input = cartItem.querySelector('input');
+        const removeBtn = cartItem.querySelector('.remove-cart-btn');
+        input.onchange = e => updateQuantity(item.id, e.target.value);
+        removeBtn.onclick = () => removeFromCart(item.id);
         container.appendChild(cartItem);
         subtotal += (p.discount || p.price) * item.quantity;
     });
 
-    if (cart.length === 0) {
-        container.innerHTML = '<div class="text-center text-muted py-4">Your cart is empty.</div>';
-    }
     calculateTotal(subtotal);
 }
 
@@ -553,12 +562,15 @@ function showToast(message, type = 'success') {
 function showConfirmToast(message, onConfirm, onCancel) {
     const toastContainer = createToastContainer();
     const toast = document.createElement('div');
-    toast.className = 'toast confirm';
+    toast.className = 'toast confirm shadow-lg border-0';
+    toast.style.cssText = 'min-width: 280px; max-width: 90vw;';
     toast.innerHTML = `
-        <p>${message}</p>
-        <div class="confirm-buttons">
-            <button class="confirm-yes">Yes</button>
-            <button class="confirm-no">No</button>
+        <div class="toast-body p-3">
+            <p class="mb-3 fw-semibold">${message}</p>
+            <div class="d-flex gap-2 justify-content-end">
+                <button class="btn btn-sm btn-outline-secondary confirm-no">No</button>
+                <button class="btn btn-sm btn-danger confirm-yes">Yes, Delete</button>
+            </div>
         </div>
     `;
     toastContainer.appendChild(toast);
