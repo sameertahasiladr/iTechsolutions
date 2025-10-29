@@ -1,4 +1,4 @@
-// script.js – FINAL: Fully Responsive + Professional Dealer Message
+// script.js – FINAL: Fully Responsive + Professional Dealer Message + Customer Name
 const PHONE_NUMBER = '9545690700';
 const API_BASE = '/api';
 const CLOUDINARY_CLOUD = 'ddktvfhsb';
@@ -30,14 +30,14 @@ function checkAdminAuth() {
     const panel = document.getElementById('admin-panel');
     if (!login || !panel) return;
 
-    if (isAdminAuthenticated) {
-        login.classList.add('d-none');
-        panel.classList.remove('d-none');
-        loadProducts();
-    } else {
-        login.classList.remove('d-none');
-        panel.classList.add('d-none');
-    }
+if (isAdminAuthenticated) {
+    login.classList.add('d-none');
+    panel.classList.remove('d-none');
+    loadProducts();
+} else {
+    login.classList.remove('d-none');
+    panel.classList.add('d-none');
+}
 }
 
 document.getElementById('login-form')?.addEventListener('submit', e => {
@@ -266,7 +266,7 @@ function addToCart(id) {
     if (document.getElementById('cart-items')) displayCart();
 }
 
-// === CART DISPLAY (MOBILE REMOVE BUTTON FIXED) ===
+// === CART DISPLAY + AUTO UPDATE ===
 function displayCart() {
     const container = document.getElementById('cart-items');
     if (!container) return;
@@ -303,7 +303,7 @@ function displayCart() {
                             <input type="number" value="${item.quantity}" min="1" class="form-control form-control-sm" style="width:60px;">
                         </div>
                         <button class="btn btn-outline-danger btn-sm remove-cart-btn">
-                            <i class="bi bi-trash"></i> <span class="d-none d-sm-inline">Remove</span>
+                            <span class="d-none d-sm-inline">Remove</span>
                         </button>
                     </div>
                 </div>
@@ -371,52 +371,7 @@ function calculateTotal(subtotal) {
     totalEl.textContent = subtotal + shipping;
 }
 
-// === ORDER VIA WHATSAPP — PROFESSIONAL DEALER MESSAGE ===
-document.getElementById('order-whatsapp')?.addEventListener('click', () => {
-    const addr = document.getElementById('address')?.value.trim();
-    const state = document.getElementById('state')?.value;
-    const pickup = state === 'Goa' && document.getElementById('pickup')?.checked;
-    const total = document.getElementById('total')?.textContent;
-
-    if (!addr || !state || cart.length === 0) {
-        showToast('Please fill address & select state.', 'error');
-        return;
-    }
-
-    const items = cart.map(item => {
-        const p = products.find(x => x.id === item.id);
-        const price = p.discount || p.price;
-        return `• ${p.name} × ${item.quantity} = ${price * item.quantity} Rs`;
-    }).join('\n');
-
-    const shipping = document.getElementById('shipping-charge').textContent;
-    const shippingNote = document.getElementById('shipping-note').textContent;
-
-    const message = `
-*NEW ORDER - iTech Solutions*
-
-*Customer Details*
-Name: [Enter Name]
-Phone: [Auto-filled on WhatsApp]
-Address: ${addr}, ${state}
-Delivery: ${pickup ? 'Pickup (Free)' : `Delivery - ${shippingNote}`}
-
-*Order Items*
-${items}
-
-*Pricing*
-Subtotal: ${total - shipping} Rs
-Shipping: ${shipping} Rs ${shippingNote}
-*Total: ${total} Rs*
-
-*Note:* Please confirm stock & delivery within 24 hours.
-`.trim();
-
-    const encoded = encodeURIComponent(message);
-    window.open(`https://wa.me/${PHONE_NUMBER}?text=${encoded}`, '_blank');
-});
-
-// === ORDER VIA WHATSAPP — NOW INCLUDES NAME ===
+// === ORDER VIA WHATSAPP — WITH CUSTOMER NAME ===
 document.getElementById('order-whatsapp')?.addEventListener('click', () => {
     const name = document.getElementById('customer-name')?.value.trim();
     const addr = document.getElementById('address')?.value.trim();
@@ -462,7 +417,7 @@ Shipping: ${shipping} Rs ${shippingNote}
     window.open(`https://wa.me/${PHONE_NUMBER}?text=${encoded}`, '_blank');
 });
 
-// === ORDER VIA CALL — NAME INCLUDED + COPIED ===
+// === ORDER VIA CALL — NAME COPIED ===
 document.getElementById('order-call')?.addEventListener('click', () => {
     const name = document.getElementById('customer-name')?.value.trim();
     const addr = document.getElementById('address')?.value.trim();
@@ -495,13 +450,24 @@ Please confirm stock and arrange delivery.
 `.trim();
 
     navigator.clipboard.writeText(script).then(() => {
-        showToast('Order script copied! Opening call...', 'success');
+        showToast('Order script copied! Calling...', 'success');
         setTimeout(() => window.location.href = `tel:${PHONE_NUMBER}`, 800);
     }).catch(() => {
-        showToast('Opening call...', 'success');
+        showToast('Calling...', 'success');
         window.location.href = `tel:${PHONE_NUMBER}`;
     });
 });
+
+// === AUTO UPDATE TOTAL ON ANY INPUT CHANGE ===
+document.getElementById('customer-name')?.addEventListener('input', () => {
+    if (document.getElementById('total')?.textContent) {
+        const subtotal = parseInt(document.getElementById('total').textContent) - parseInt(document.getElementById('shipping-charge').textContent || '0');
+        calculateTotal(subtotal);
+    }
+});
+document.getElementById('address')?.addEventListener('input', displayCart);
+document.getElementById('state')?.addEventListener('change', displayCart);
+document.getElementById('pickup')?.addEventListener('change', displayCart);
 
 // === ADMIN: IMAGE PREVIEW ===
 document.getElementById('images')?.addEventListener('change', e => {
@@ -706,15 +672,14 @@ function showConfirmToast(message, onConfirm, onCancel) {
 }
 
 // === INIT ===
-if (window.location.pathname.includes('admin.html')) {
-    document.addEventListener('DOMContentLoaded', checkAdminAuth);
-} else {
-    document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
+    if (window.location.pathname.includes('admin.html')) {
+        checkAdminAuth();
+    } else {
         loadProducts();
-    });
-}
-
-if (document.getElementById('state')) {
-    document.getElementById('state').onchange = displayCart;
-    document.getElementById('pickup')?.addEventListener('change', displayCart);
-}
+        // Auto render cart after products load
+        setTimeout(() => {
+            if (document.getElementById('cart-items')) displayCart();
+        }, 800);
+    }
+})
