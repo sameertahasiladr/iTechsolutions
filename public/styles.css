@@ -537,3 +537,50 @@ footer { font-size: 0.9rem; }
     border-color: #fff !important;
     box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.25) !important;
 }
+/* === HERO FIX: TEXT & BUTTONS VISIBLE === */
+.hero {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+}
+
+.hero-bg {
+    background-attachment: fixed;
+    z-index: 1 !important;
+}
+
+.hero .position-absolute[style*="background: rgba"] {
+    z-index: 2 !important;
+}
+
+.hero > .container-xl {
+    z-index: 3 !important;
+}
+
+/* Text Shadow for Readability */
+.text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero-bg {
+        background-attachment: scroll;
+    }
+    .hero {
+        min-height: 70vh;
+    }
+    .hero .display-3 {
+        font-size: 2.5rem;
+    }
+    .hero .btn-lg {
+        font-size: 1rem;
+        padding: 0.75rem 1.5rem;
+    }
+}
+
+/* Search Focus */
+#home-search:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.3) !important;
+}

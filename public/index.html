@@ -30,36 +30,36 @@
     </nav>
 
     <main class="p-4">
-       <!-- HERO SECTION WITH LIVE IMAGE URL -->
-<section class="hero position-relative text-center text-white overflow-hidden" style="background: #000;">
-    <!-- Background Banner via URL -->
+   <!-- HERO SECTION – FIXED: TEXT & BUTTONS VISIBLE -->
+<section class="hero position-relative text-center text-white overflow-hidden" style="background: #000; min-height: 80vh; display: flex; align-items: center;">
+    <!-- Background Banner -->
     <div class="hero-bg position-absolute top-0 start-0 w-100 h-100" 
-         style="background: url('https://cdn.thewirecutter.com/wp-content/media/2024/10/BEST-BLUETOOTHT-AUDIO-RECEIVERS-2048px-4664-2x1-1.jpg?width=2048&quality=75&crop=2:1&auto=webp') center/cover no-repeat; filter: brightness(0.7);">
+         style="background: url('https://cdn.thewirecutter.com/wp-content/media/2024/10/BEST-BLUETOOTHT-AUDIO-RECEIVERS-2048px-4664-2x1-1.jpg?width=2048&quality=75&crop=2:1&auto=webp') center/cover no-repeat; filter: brightness(0.6); z-index: 1;">
     </div>
     
-    <!-- Dark Overlay -->
-    <div class="position-absolute top-0 start-0 w-100 h-100" style="background: rgba(0, 0, 0, 0.5);"></div>
+    <!-- Dark Overlay – MUST BE ON TOP OF IMAGE -->
+    <div class="position-absolute top-0 start-0 w-100 h-100" style="background: rgba(0, 0, 0, 0.6); z-index: 2;"></div>
 
-    <!-- Content -->
-    <div class="container-xl position-relative py-5 py-md-6">
+    <!-- Content – ON TOP OF EVERYTHING -->
+    <div class="container-xl position-relative py-5" style="z-index: 3;">
         <div class="row justify-content-center">
             <div class="col-12 col-lg-10 col-xl-8">
-                <h1 class="display-4 display-md-3 fw-bold mb-3">Welcome to iTech Solutions</h1>
-                <p class="lead mb-4 fs-5">Discover premium new and refurbished <strong>laptops, mobiles, printers, and PCs</strong> at unbeatable prices.</p>
+                <h1 class="display-4 display-md-3 fw-bold mb-3 text-shadow">Welcome to iTech Solutions</h1>
+                <p class="lead mb-4 fs-5 text-shadow">Discover premium new and refurbished <strong>laptops, mobiles, printers, and PCs</strong> at unbeatable prices.</p>
                 
                 <!-- Search Bar -->
                 <div class="mb-4">
                     <input type="text" id="home-search" placeholder="Search for laptops, mobiles, printers..." 
-                           class="form-control form-control-lg rounded-pill shadow-sm" 
-                           style="max-width: 500px; margin: 0 auto;">
+                           class="form-control form-control-lg rounded-pill shadow-sm bg-white text-dark" 
+                           style="max-width: 500px; margin: 0 auto; border: none;">
                 </div>
 
                 <!-- Buttons -->
                 <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
-                    <a href="/products.html" class="btn btn-light btn-lg px-5 shadow-sm">
+                    <a href="/products.html" class="btn btn-light btn-lg px-5 shadow-sm text-dark fw-semibold">
                         <i class="bi bi-laptop me-2"></i> Shop Now
                     </a>
-                    <a href="#service-booking" class="btn btn-outline-light btn-lg px-5 shadow-sm">
+                    <a href="#service-booking" class="btn btn-outline-light btn-lg px-5 shadow-sm border-2">
                         <i class="bi bi-tools me-2"></i> Book Service
                     </a>
                 </div>
