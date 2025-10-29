@@ -688,3 +688,31 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 800);
     }
 });
+// === SERVICE BOOKING VIA WHATSAPP ===
+document.getElementById('book-whatsapp')?.addEventListener('click', () => {
+    const name = document.getElementById('service-name')?.value.trim();
+    const product = document.getElementById('service-product')?.value.trim();
+    const issue = document.getElementById('service-issue')?.value.trim();
+
+    if (!name || !product || !issue) {
+        showToast('Please fill all fields.', 'error');
+        return;
+    }
+
+    const message = `
+*SERVICE BOOKING - iTech Solutions*
+
+*Customer Details*
+Name: ${name}
+Product: ${product}
+
+*Issue Description*
+${issue}
+
+*Note:* Our technician will contact you within 2 hours to confirm appointment.
+`.trim();
+
+    const encoded = encodeURIComponent(message);
+    window.open(`https://wa.me/${PHONE_NUMBER}?text=${encoded}`, '_blank');
+    showToast('Service request sent!', 'success');
+});
