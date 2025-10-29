@@ -508,3 +508,32 @@ footer { font-size: 0.9rem; }
         height: 140px !important;
     }
 }
+/* === HERO SECTION WITH LIVE URL BANNER === */
+.hero {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+}
+
+.hero-bg {
+    z-index: 1;
+    background-attachment: fixed; /* Parallax on desktop */
+}
+
+@media (max-width: 768px) {
+    .hero-bg {
+        background-attachment: scroll;
+    }
+    .hero {
+        min-height: 70vh;
+    }
+    .hero .display-3 {
+        font-size: 2.5rem;
+    }
+}
+
+/* Search bar focus */
+#home-search:focus {
+    border-color: #fff !important;
+    box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.25) !important;
+}
