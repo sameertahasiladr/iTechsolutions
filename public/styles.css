@@ -165,3 +165,140 @@ footer { font-size: 0.9rem; }
     .btn { font-size: 0.85rem; }
     .display-4 { font-size: 2rem; }
 }
+/* ========================================
+   SERVICE PAGE - IT & ELECTRONICS REPAIR
+   ======================================== */
+
+.service {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+.service h1 {
+    color: #0d6efd;
+    font-weight: 700;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.service .card {
+    border-radius: 16px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #dee2e6;
+}
+
+.service .card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 123, 255, 0.15) !important;
+}
+
+.service .card-body {
+    background: #ffffff;
+    padding: 2rem;
+}
+
+.service .form-label {
+    color: #212529;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.service .form-control,
+.service .form-select {
+    border: 1.5px solid #ced4da;
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-color: #f8f9fa;
+}
+
+.service .form-control:focus,
+.service .form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+    background-color: #ffffff;
+}
+
+.service textarea.form-control {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.service .btn-success {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    border: none;
+    border-radius: 12px;
+    padding: 0.9rem 1.5rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+    transition: all 0.3s ease;
+}
+
+.service .btn-success:hover {
+    background: linear-gradient(135deg, #218838, #1da88a);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(40, 167, 69, 0.4);
+}
+
+.service .btn-success:active {
+    transform: translateY(0);
+}
+
+/* Icons */
+.service .bi {
+    margin-right: 0.5rem;
+}
+
+/* Footer Info */
+.service .text-center small {
+    color: #6c757d;
+    line-height: 1.6;
+}
+
+.service .text-center a {
+    color: #0d6efd;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.service .text-center a:hover {
+    text-decoration: underline;
+}
+
+/* Mobile Optimization */
+@media (max-width: 576px) {
+    .service .card-body {
+        padding: 1.5rem;
+    }
+    
+    .service h1 {
+        font-size: 2rem;
+    }
+    
+    .service .btn-success {
+        font-size: 1rem;
+        padding: 0.8rem;
+    }
+}
+
+/* Optional: Add a subtle animation on load */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.service .card {
+    animation: fadeInUp 0.6s ease-out;
+}
