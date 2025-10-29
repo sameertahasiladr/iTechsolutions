@@ -688,7 +688,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 800);
     }
 });
-// === IT & ELECTRONICS REPAIR BOOKING WITH ADDRESS ===
+// === SERVICE BOOKING: LAPTOP, MOBILE, PRINTER, CCTV, SOFTWARE ===
 document.getElementById('book-whatsapp')?.addEventListener('click', () => {
     const name = document.getElementById('service-name')?.value.trim();
     const address = document.getElementById('service-address')?.value.trim();
@@ -696,35 +696,34 @@ document.getElementById('book-whatsapp')?.addEventListener('click', () => {
     const model = document.getElementById('service-model')?.value.trim();
     const issue = document.getElementById('service-issue')?.value.trim();
 
-    if (!name || !address || !product || product === '' || !issue) {
-        showToast('Please fill Name, Address, Device & Problem.', 'error');
+    if (!name || !address || !product || !issue) {
+        showToast('Please fill Name, Address, Product & Problem.', 'error');
         return;
     }
 
     const modelLine = model ? `\nModel: ${model}` : '';
 
     const message = `
-*IT REPAIR BOOKING - iTech Solutions*
+*SERVICE REQUEST - iTech Solutions*
 
 *Customer Details*
 Name: ${name}
-Address: ${address}
-Device: ${product}${modelLine}
+Address: ${address}${modelLine}
+Product: ${product}
 
-*Problem Description*
+*Issue Description*
 ${issue}
 
-*Service Info*
+*Service Details*
 • Free Diagnosis
-• Genuine Parts (if needed)
+• Fast Repair (Same Day if possible)
 • 30 Days Repair Warranty
-• On-Site or Remote Support
-• Data Privacy Guaranteed
+• Doorstep Service (Goa)
 
-*Note:* Our technician will contact you within 1 hour.
+*Note:* Technician will contact you within 1 hour.
 `.trim();
 
     const encoded = encodeURIComponent(message);
     window.open(`https://wa.me/${PHONE_NUMBER}?text=${encoded}`, '_blank');
-    showToast('Repair request sent!', 'success');
+    showToast('Service request sent!', 'success');
 });
