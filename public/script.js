@@ -80,7 +80,7 @@ function renderAll() {
     if (document.getElementById('cart-items')) displayCart();
 }
 
-// === DISPLAY PRODUCTS – FULLY FIXED ===
+// === DISPLAY PRODUCTS ===
 function displayProducts(container, list, isAdmin = false, isFeatured = false) {
     if (!container) return;
     container.innerHTML = '';
@@ -94,36 +94,31 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
     displayList.forEach(product => {
         const item = document.createElement('div');
         const images = product.images || [];
-        const descShort = product.description.length > (isFeatured ? 80 : 100) 
-            ? product.description.substring(0, isFeatured ? 80 : 100) + '...' 
-            : product.description;
 
         if (isFeatured) {
             item.className = 'col';
             item.innerHTML = `
-                <div class="product-card card h-100 border-0 shadow overflow-hidden">
-                    <div class="product-image-wrapper ratio ratio-1x1">
-                        <div id="carousel-${product.id}" class="carousel slide h-100">
-                            <div class="carousel-inner h-100">
-                                ${images.length > 0 ? images.map((img, i) => `
-                                    <div class="carousel-item ${i === 0 ? 'active' : ''} h-100">
-                                        <img src="${img}" alt="${product.name}" class="d-block w-100 h-100 object-fit-cover">
-                                    </div>
-                                `).join('') : `<div class="carousel-item active h-100">
-                                    <img src="https://picsum.photos/400/400?random=${product.id}" alt="${product.name}" class="d-block w-100 h-100 object-fit-cover">
-                                </div>`}
-                            </div>
-                            ${images.length > 1 ? `
-                                <button class="carousel-control-prev" type="button" data-bs-target="#carousel-${product.id}" data-bs-slide="prev">
-                                    <span class="carousel-control-prev-icon"></span>
-                                </button>
-                                <button class="carousel-control-next" type="button" data-bs-target="#carousel-${product.id}" data-bs-slide="next">
-                                    <span class="carousel-control-next-icon"></span>
-                                </button>
-                            ` : ''}
+                <div class="product-card card h-100 border-0 shadow">
+                    <div id="carousel-${product.id}" class="carousel slide" style="height:300px;">
+                        <div class="carousel-inner h-100">
+                            ${images.length > 0 ? images.map((img, i) => `
+                                <div class="carousel-item ${i === 0 ? 'active' : ''} h-100">
+                                    <img src="${img}" alt="${product.name}" class="d-block w-100 h-100" style="object-fit:contain;background:#fff;padding:1rem;">
+                                </div>
+                            `).join('') : `<div class="carousel-item active h-100">
+                                <img src="https://picsum.photos/300/300?random=${product.id}" alt="${product.name}" class="d-block w-100 h-100" style="object-fit:contain;background:#fff;padding:1rem;">
+                            </div>`}
                         </div>
+                        ${images.length > 1 ? `
+                            <button class="carousel-control-prev" type="button" data-bs-target="#carousel-${product.id}" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon"></span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#carousel-${product.id}" data-bs-slide="next">
+                                <span class="carousel-control-next-icon"></span>
+                            </button>
+                        ` : ''}
                     </div>
-                    <div class="card-body d-flex flex-column p-3">
+                    <div class="card-body">
                         <h5 class="card-title mb-1">${product.name}</h5>
                         <p class="text-muted mb-1">Type: ${product.type.charAt(0).toUpperCase() + product.type.slice(1)}</p>
                         <p class="price mb-1">
@@ -132,31 +127,25 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
                                 : `<strong>${product.price} Rs</strong>`
                             }
                         </p>
-                        <div class="description-container">
-                            <p class="text-muted description-short mb-1">${descShort}</p>
-                            ${product.description.length > (isFeatured ? 80 : 100) ? `
-                                <p class="text-muted description-full mb-1 d-none">${product.description}</p>
-                                <span class="view-more text-primary" style="cursor:pointer;font-weight:500;font-size:0.85rem;">View More</span>
-                            ` : ''}
-                        </div>
-                        <button class="btn btn-outline-primary mt-auto w-100 add-to-cart-btn" data-id="${product.id}">
+                        <p class="text-muted mb-0">${product.description}</p>
+                        <button class="btn btn-outline-primary mt-2 w-100" onclick="addToCart(${product.id})">
                             Add to Cart
                         </button>
                     </div>
                 </div>
             `;
         } else {
-            item.className = 'product-card list-group-item d-flex align-items-start p-3 gap-3';
+            item.classList.add('product-card', 'list-group-item', 'd-flex', 'align-items-center', 'p-3');
             item.innerHTML = `
-                <div class="product-image-wrapper flex-shrink-0" style="width:120px;height:120px;">
-                    <div id="carousel-${product.id}" class="carousel slide h-100">
+                <div class="image-container me-3">
+                    <div id="carousel-${product.id}" class="carousel slide" style="width:120px;height:120px;border:1px solid #dee2e6;border-radius:0.5rem;overflow:hidden;">
                         <div class="carousel-inner h-100">
                             ${images.length > 0 ? images.map((img, i) => `
                                 <div class="carousel-item ${i === 0 ? 'active' : ''} h-100">
-                                    <img src="${img}" alt="${product.name}" class="d-block w-100 h-100 object-fit-cover rounded">
+                                    <img src="${img}" alt="${product.name}" class="d-block w-100 h-100" style="object-fit:contain;background:#fff;padding:0.5rem;">
                                 </div>
                             `).join('') : `<div class="carousel-item active h-100">
-                                <img src="https://picsum.photos/120/120?random=${product.id}" alt="${product.name}" class="d-block w-100 h-100 object-fit-cover rounded">
+                                <img src="https://picsum.photos/120/120?random=${product.id}" alt="${product.name}" class="d-block w-100 h-100" style="object-fit:contain;background:#fff;padding:0.5rem;">
                             </div>`}
                         </div>
                         ${images.length > 1 ? `
@@ -178,86 +167,34 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
                             : `<strong>${product.price} Rs</strong>`
                         }
                     </p>
-                    <div class="description-container">
-                        <p class="text-muted description-short mb-1">${descShort}</p>
-                        ${product.description.length > 100 ? `
-                            <p class="text-muted description-full mb-1 d-none">${product.description}</p>
-                            <span class="view-more text-primary" style="cursor:pointer;font-weight:500;font-size:0.85rem;">View More</span>
-                        ` : ''}
-                    </div>
+                    <p class="text-muted mb-0">${product.description}</p>
                 </div>
             `;
 
             if (!isAdmin) {
-                const btn = document.createElement('div');
-                btn.innerHTML = `<button class="btn btn-outline-primary add-to-cart-btn" data-id="${product.id}">Add</button>`;
-                item.appendChild(btn.firstChild);
+                const btn = document.createElement('button');
+                btn.className = 'btn btn-outline-primary';
+                btn.innerHTML = 'Add';
+                btn.onclick = () => addToCart(product.id);
+                item.appendChild(btn);
             } else {
                 const actions = document.createElement('div');
                 actions.className = 'd-flex gap-2';
-                actions.innerHTML = `
-                    <button class="btn btn-outline-primary btn-sm">Edit</button>
-                    <button class="btn btn-outline-danger btn-sm">Delete</button>
-                `;
-                actions.querySelectorAll('button')[0].onclick = () => editProduct(product.id);
-                actions.querySelectorAll('button')[1].onclick = () => deleteProduct(product.id);
+                const edit = document.createElement('button');
+                edit.className = 'btn btn-outline-primary';
+                edit.innerHTML = 'Edit';
+                edit.onclick = () => editProduct(product.id);
+                const del = document.createElement('button');
+                del.className = 'btn btn-outline-danger';
+                del.innerHTML = 'Delete';
+                del.onclick = () => deleteProduct(product.id);
+                actions.appendChild(edit);
+                actions.appendChild(del);
                 item.appendChild(actions);
             }
         }
         container.appendChild(item);
     });
-
-    // === VIEW MORE – 100% WORKING ===
-    container.querySelectorAll('.view-more').forEach(btn => {
-        btn.onclick = function () {
-            const container = this.parentElement;
-            const short = container.querySelector('.description-short');
-            const full = container.querySelector('.description-full');
-            if (short && full) {
-                if (full.classList.contains('d-none')) {
-                    short.classList.add('d-none');
-                    full.classList.remove('d-none');
-                    this.textContent = 'View Less';
-                } else {
-                    full.classList.add('d-none');
-                    short.classList.remove('d-none');
-                    this.textContent = 'View More';
-                }
-            }
-        };
-    });
-
-    // === ADD TO CART – 100% WORKING ===
-    container.querySelectorAll('.add-to-cart-btn').forEach(btn => {
-        btn.onclick = function (e) {
-            e.stopPropagation();
-            const id = parseInt(this.dataset.id);
-            addToCart(id, this);
-        };
-    });
-}
-
-// === ADD TO CART – FINAL WORKING ===
-function addToCart(id, btn) {
-    const p = products.find(x => x.id === id);
-    if (!p) return showToast('Product not found.', 'error');
-
-    const item = cart.find(i => i.id === id);
-    if (item) item.quantity++;
-    else cart.push({ id, quantity: 1 });
-
-    localStorage.setItem('cart', JSON.stringify(cart));
-    showToast(`${p.name} added!`, 'success');
-
-    // CHANGE TO "GO TO CART"
-    if (btn && !btn.dataset.changed) {
-        btn.dataset.changed = 'true';
-        btn.innerHTML = 'Go to Cart';
-        btn.className = 'btn btn-success mt-auto w-100';
-        btn.onclick = () => window.location.href = '/cart.html';
-    }
-
-    if (document.getElementById('cart-items')) displayCart();
 }
 
 // === REST OF CODE (CART, ADMIN, TOASTS) – UNCHANGED ===
