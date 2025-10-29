@@ -688,31 +688,43 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 800);
     }
 });
-// === SERVICE BOOKING VIA WHATSAPP ===
+// === IT & ELECTRONICS REPAIR BOOKING WITH ADDRESS ===
 document.getElementById('book-whatsapp')?.addEventListener('click', () => {
     const name = document.getElementById('service-name')?.value.trim();
-    const product = document.getElementById('service-product')?.value.trim();
+    const address = document.getElementById('service-address')?.value.trim();
+    const product = document.getElementById('service-product')?.value;
+    const model = document.getElementById('service-model')?.value.trim();
     const issue = document.getElementById('service-issue')?.value.trim();
 
-    if (!name || !product || !issue) {
-        showToast('Please fill all fields.', 'error');
+    if (!name || !address || !product || product === '' || !issue) {
+        showToast('Please fill Name, Address, Device & Problem.', 'error');
         return;
     }
 
+    const modelLine = model ? `\nModel: ${model}` : '';
+
     const message = `
-*SERVICE BOOKING - iTech Solutions*
+*IT REPAIR BOOKING - iTech Solutions*
 
 *Customer Details*
 Name: ${name}
-Product: ${product}
+Address: ${address}
+Device: ${product}${modelLine}
 
-*Issue Description*
+*Problem Description*
 ${issue}
 
-*Note:* Our technician will contact you within 2 hours to confirm appointment.
+*Service Info*
+• Free Diagnosis
+• Genuine Parts (if needed)
+• 30 Days Repair Warranty
+• On-Site or Remote Support
+• Data Privacy Guaranteed
+
+*Note:* Our technician will contact you within 1 hour.
 `.trim();
 
     const encoded = encodeURIComponent(message);
     window.open(`https://wa.me/${PHONE_NUMBER}?text=${encoded}`, '_blank');
-    showToast('Service request sent!', 'success');
+    showToast('Repair request sent!', 'success');
 });
