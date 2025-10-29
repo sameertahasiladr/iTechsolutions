@@ -403,11 +403,11 @@ footer { font-size: 0.9rem; }
     }
 }
 
-/* === HERO – YOUR ORIGINAL TEXT + HORIZONTAL ON MOBILE === */
+/* === HERO – MOBILE PERFECT + DESKTOP STUNNING === */
 .hero {
-    height: 50vh;
+    height: 48vh;
     min-height: 300px;
-    max-height: 550px;
+    max-height: 520px;
     display: flex;
     align-items: center;
     overflow: hidden;
@@ -415,7 +415,7 @@ footer { font-size: 0.9rem; }
 
 .hero-bg {
     background-attachment: scroll !important;
-    background-position: center 25% !important;
+    background-position: center 35% !important;
     z-index: 1 !important;
 }
 
@@ -423,7 +423,7 @@ footer { font-size: 0.9rem; }
 @media (min-width: 768px) {
     .hero {
         height: 75vh;
-        min-height: 500px;
+        min-height: 520px;
     }
     .hero-bg {
         background-attachment: fixed !important;
@@ -433,25 +433,37 @@ footer { font-size: 0.9rem; }
 
 /* Text Shadow */
 .text-shadow {
-    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
 }
 
-/* Search Focus */
+/* Search & Buttons */
 #home-search {
-    font-size: 1rem !important;
+    font-size: 0.95rem !important;
 }
 #home-search:focus {
     outline: none !important;
     box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.4) !important;
 }
 
-/* Mobile Button Size */
+/* MOBILE FIXES */
 @media (max-width: 576px) {
-    .hero .btn-lg {
-        font-size: 0.95rem;
-        padding: 0.75rem 1.5rem;
+    .hero {
+        height: 45vh;
+        min-height: 280px;
     }
-    .hero .display-4 {
-        font-size: 2.2rem;
+    .hero .display-5 {
+        font-size: 1.8rem !important;
+        line-height: 1.2;
+    }
+    .hero .lead {
+        font-size: 0.9rem !important;
+    }
+    .hero .btn-md {
+        font-size: 0.85rem !important;
+        padding: 0.5rem 1rem !important;
+    }
+    .hero .form-control-lg {
+        font-size: 0.9rem !important;
+        padding: 0.6rem 1rem !important;
     }
 }
