@@ -1,4 +1,4 @@
-// script.js – FINAL: View More + Go to Cart FIXED
+// script.js – PERMANENT: Supabase + Cloudinary + AMAZON-STYLE IMAGES
 const PHONE_NUMBER = '9545690700';
 const API_BASE = '/api';
 const CLOUDINARY_CLOUD = 'ddktvfhsb';
@@ -40,6 +40,7 @@ function checkAdminAuth() {
     }
 }
 
+// Login form
 document.getElementById('login-form')?.addEventListener('submit', e => {
     e.preventDefault();
     const u = document.getElementById('admin-username').value.trim();
@@ -47,6 +48,7 @@ document.getElementById('login-form')?.addEventListener('submit', e => {
     loginAdmin(u, p);
 });
 
+// Logout
 document.getElementById('admin-logout')?.addEventListener('click', () => {
     isAdminAuthenticated = false;
     showToast('Logged out.', 'success');
@@ -80,7 +82,7 @@ function renderAll() {
     if (document.getElementById('cart-items')) displayCart();
 }
 
-// === DISPLAY PRODUCTS ===
+// === DISPLAY PRODUCTS (AMAZON-STYLE IMAGES) ===
 function displayProducts(container, list, isAdmin = false, isFeatured = false) {
     if (!container) return;
     container.innerHTML = '';
@@ -197,14 +199,29 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
     });
 }
 
-// === REST OF CODE (CART, ADMIN, TOASTS) – UNCHANGED ===
+// === CART ===
+function addToCart(id) {
+    const p = products.find(x => x.id === id);
+    if (!p) return showToast('Product not found.', 'error');
+    const item = cart.find(i => i.id === id);
+    if (item) item.quantity++;
+    else cart.push({ id, quantity: 1 });
+    localStorage.setItem('cart', JSON.stringify(cart));
+    showToast(`${p.name} added!`, 'success');
+    if (document.getElementById('cart-items')) displayCart();
+}
+
 function displayCart() {
     const container = document.getElementById('cart-items');
     if (!container) return;
     container.innerHTML = '';
     let subtotal = 0;
 
-    cart = cart.filter(item => products.find(p => p.id === item.id));
+    cart = cart.filter(item => {
+        const exists = products.find(p => p.id === item.id);
+        if (!exists) return false;
+        return true;
+    });
     localStorage.setItem('cart', JSON.stringify(cart));
 
     cart.forEach(item => {
@@ -213,7 +230,7 @@ function displayCart() {
         const cartItem = document.createElement('div');
         cartItem.className = 'cart-item list-group-item d-flex align-items-center p-3';
         cartItem.innerHTML = `
-            <img src="${img}" alt="${p.name}" style="width:80px;height:80px;object-fit:cover;margin-right:1rem;">
+            <img src="${img}" alt="${p.name}" style="width:90px;height:90px;object-fit:contain;background:#fff;border:1px solid #dee2e6;border-radius:0.5rem;padding:0.5rem;margin-right:1rem;">
             <div class="flex-grow-1">
                 <h5 class="mb-1">${p.name}</h5>
                 <p class="text-muted mb-1">
@@ -261,22 +278,24 @@ function removeFromCart(id) {
 function calculateTotal(subtotal) {
     const state = document.getElementById('state')?.value;
     const pickup = document.getElementById('pickup')?.checked;
+    const goa = document.getElementById('goa-pickup');
     const charge = document.getElementById('shipping-charge');
     const total = document.getElementById('total');
     if (!charge || !total) return;
 
     let shipping = 300;
     if (state === 'Goa') {
-        document.getElementById('goa-pickup')?.classList.replace('d-none', 'd-block');
+        goa?.classList.replace('d-none', 'd-block');
         shipping = pickup ? 0 : 200;
     } else {
-        document.getElementById('goa-pickup')?.classList.replace('d-block', 'd-none');
+        goa?.classList.replace('d-block', 'd-none');
         shipping = 300;
     }
     charge.textContent = shipping;
     total.textContent = subtotal + shipping;
 }
 
+// === ORDER BUTTONS ===
 document.getElementById('order-call')?.addEventListener('click', () => {
     const addr = document.getElementById('address')?.value.trim();
     const state = document.getElementById('state')?.value;
@@ -297,6 +316,7 @@ document.getElementById('order-whatsapp')?.addEventListener('click', () => {
     window.open(`https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
 });
 
+// === ADMIN: IMAGE PREVIEW ===
 document.getElementById('images')?.addEventListener('change', e => {
     const preview = document.getElementById('image-preview');
     preview.innerHTML = '';
@@ -306,13 +326,14 @@ document.getElementById('images')?.addEventListener('change', e => {
         reader.onload = ev => {
             const img = document.createElement('img');
             img.src = ev.target.result;
-            img.style.cssText = 'width:100px;height:100px;object-fit:cover;border:1px solid #dee2e6;border-radius:0.25rem;margin:4px;';
+            img.style.cssText = 'width:100px;height:100px;object-fit:contain;background:#fff;border:1px solid #dee2e6;border-radius:0.5rem;padding:0.5rem;margin:4px;';
             preview.appendChild(img);
         };
         reader.readAsDataURL(file);
     });
 });
 
+// === ADMIN: SAVE PRODUCT (Cloudinary + Supabase) ===
 document.getElementById('save-product')?.addEventListener('click', async () => {
     const id = document.getElementById('edit-id').value;
     const name = document.getElementById('name').value.trim();
@@ -330,6 +351,7 @@ document.getElementById('save-product')?.addEventListener('click', async () => {
 
     let images = JSON.parse(existingImages);
 
+    // Upload to Cloudinary
     for (let file of files) {
         if (file.size > 1 * 1024 * 1024) {
             showToast('Image too large (max 1MB)', 'error');
@@ -400,7 +422,7 @@ function editProduct(id) {
     (p.images || []).forEach(img => {
         const el = document.createElement('img');
         el.src = img;
-        el.style.cssText = 'width:100px;height:100px;object-fit:cover;border:1px solid #dee2e6;border-radius:0.25rem;margin:4px;';
+        el.style.cssText = 'width:100px;height:100px;object-fit:contain;background:#fff;border:1px solid #dee2e6;border-radius:0.5rem;padding:0.5rem;margin:4px;';
         preview.appendChild(el);
     });
     new bootstrap.Modal(document.getElementById('productModal')).show();
@@ -420,6 +442,7 @@ async function deleteProduct(id) {
     });
 }
 
+// === FILTERS & SEARCH ===
 if (document.getElementById('search')) {
     const apply = () => {
         let list = products.filter(p => p.name.toLowerCase().includes(document.getElementById('search').value.toLowerCase()));
@@ -445,6 +468,7 @@ if (document.getElementById('home-search')) {
     });
 }
 
+// === TOASTS ===
 function createToastContainer() {
     let toastContainer = document.getElementById('toast-container');
     if (!toastContainer) {
@@ -492,6 +516,7 @@ function showConfirmToast(message, onConfirm, onCancel) {
     };
 }
 
+// === INIT ===
 if (window.location.pathname.includes('admin.html')) {
     document.addEventListener('DOMContentLoaded', checkAdminAuth);
 } else {
