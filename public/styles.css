@@ -227,3 +227,43 @@ footer { font-size: 0.9rem; }
         font-size: 1rem;
     }
 }
+/* === FEATURED PRODUCTS MOBILE GRID FIX === */
+#featured-products .product-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+#featured-products .product-card .card-body {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+#featured-products .product-card .carousel {
+    height: 180px !important;
+}
+
+#featured-products .product-card .carousel img {
+    height: 100% !important;
+    width: 100% !important;
+    object-fit: contain !important;
+}
+
+/* Mobile: Smaller text & buttons */
+@media (max-width: 576px) {
+    #featured-products .card-title {
+        font-size: 0.85rem !important;
+    }
+    #featured-products .price,
+    #featured-products .text-muted {
+        font-size: 0.8rem !important;
+    }
+    #featured-products .btn-sm {
+        font-size: 0.7rem !important;
+        padding: 0.35rem 0.5rem !important;
+    }
+    #featured-products .carousel {
+        height: 140px !important;
+    }
+}

@@ -102,7 +102,7 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
             : product.description;
 
         if (isFeatured) {
-            item.className = 'col-12 col-md-6 col-lg-4';
+           item.className = 'col-6 col-md-4';
             item.innerHTML = `
                 <div class="product-card card h-100 border-0 shadow-sm">
                     <div class="carousel slide" id="carousel-${product.id}" style="height:280px;">
