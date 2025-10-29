@@ -1,4 +1,4 @@
-// script.js – FINAL: Customer Name FIXED + Professional Messages + Auto Update
+// script.js – FINAL: MOBILE-FRIENDLY FEATURED PRODUCTS + ALL FIXES
 const PHONE_NUMBER = '9545690700';
 const API_BASE = '/api';
 const CLOUDINARY_CLOUD = 'ddktvfhsb';
@@ -102,49 +102,42 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
             : product.description;
 
         if (isFeatured) {
-           item.className = 'col-6 col-md-4';
+            item.className = 'col-6 col-md-4';
             item.innerHTML = `
-                <div class="product-card card h-100 border-0 shadow-sm">
-                    <div class="carousel slide" id="carousel-${product.id}" style="height:280px;">
-                        <div class="carousel-inner h-100">
-                            ${images.length > 0 ? images.map((img, i) => `
-                                <div class="carousel-item ${i === 0 ? 'active' : ''} h-100">
-                                    <img src="${img}" alt="${product.name}" class="d-block w-100 h-100 object-fit-contain p-3 bg-white">
-                                </div>
-                            `).join('') : `<div class="carousel-item active h-100">
-                                <img src="https://picsum.photos/300/300?random=${product.id}" alt="${product.name}" class="d-block w-100 h-100 object-fit-contain p-3 bg-white">
-                            </div>`}
-                        </div>
-                        ${images.length > 1 ? `
-                            <button class="carousel-control-prev" type="button" data-bs-target="#carousel-${product.id}" data-bs-slide="prev">
-                                <span class="carousel-control-prev-icon"></span>
-                            </button>
-                            <button class="carousel-control-next" type="button" data-bs-target="#carousel-${product.id}" data-bs-slide="next">
-                                <span class="carousel-control-next-icon"></span>
-                            </button>
-                        ` : ''}
+                <div class="featured-card card h-100">
+                    <div class="product-image-wrapper position-relative bg-white rounded overflow-hidden" style="height:140px;">
+                        ${images.length > 0 ? `
+                            <img src="${images[0]}" alt="${product.name}" class="w-100 h-100 object-fit-contain p-2">
+                            ${images.length > 1 ? `<span class="position-absolute top-0 end-0 bg-primary text-white small px-2 py-1 rounded-start">+${images.length - 1}</span>` : ''}
+                        ` : `
+                            <div class="d-flex align-items-center justify-content-center h-100 text-muted">
+                                <i class="bi bi-image fs-1"></i>
+                            </div>
+                        `}
                     </div>
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title mb-1 fs-6">${product.name}</h5>
-                        <p class="text-muted small mb-1">Type: ${product.type.charAt(0).toUpperCase() + product.type.slice(1)}</p>
-                        <p class="price mb-2">
+                    <div class="card-body d-flex flex-column p-3">
+                        <h5 class="card-title mb-1" style="font-size:0.85rem;font-weight:600;line-height:1.3;-webkit-line-clamp:2;-webkit-box-orient:vertical;display:-webkit-box;overflow:hidden;">
+                            ${product.name}
+                        </h5>
+                        <p class="text-muted mb-1" style="font-size:0.7rem;">Type: ${product.type.charAt(0).toUpperCase() + product.type.slice(1)}</p>
+                        <p class="price mb-2" style="font-size:0.9rem;font-weight:700;color:#198754;">
                             ${product.discount 
-                                ? `<strong class="text-success">${product.discount} Rs</strong> <del class="text-muted small">${product.price} Rs</del>`
+                                ? `<strong>${product.discount} Rs</strong> <del style="color:#999;font-size:0.75rem;">${product.price} Rs</del>`
                                 : `<strong>${product.price} Rs</strong>`
                             }
                         </p>
-                        <p class="text-muted small mb-2 desc-text">
+                        <p class="text-muted mb-2 desc-text" style="font-size:0.7rem;color:#666;line-height:1.3;-webkit-line-clamp:2;-webkit-box-orient:vertical;display:-webkit-box;overflow:hidden;flex-grow:1;">
                             <span class="short-desc">${shortDesc}</span>
                             ${product.description.length > 80 ? `
                                 <span class="full-desc d-none">${product.description}</span>
-                                <a href="#" class="text-primary view-more fs-7">View More</a>
+                                <a href="#" class="text-primary view-more" style="font-size:0.65rem;padding:0;">View More</a>
                             ` : ''}
                         </p>
                         <div class="mt-auto d-grid gap-2 d-md-flex">
-                            <button class="btn btn-outline-primary btn-sm add-to-cart-btn flex-fill" data-id="${product.id}">
+                            <button class="btn btn-outline-primary btn-sm add-to-cart-btn flex-fill" data-id="${product.id}" style="font-size:0.7rem;padding:0.35rem 0.6rem;">
                                 ${quantity > 0 ? `Added (${quantity})` : 'Add to Cart'}
                             </button>
-                            ${quantity > 0 ? `<a href="/cart.html" class="btn btn-primary btn-sm flex-fill">Go to Cart</a>` : ''}
+                            ${quantity > 0 ? `<a href="/cart.html" class="btn btn-primary btn-sm flex-fill" style="font-size:0.75rem;">Go to Cart</a>` : ''}
                         </div>
                     </div>
                 </div>
@@ -214,6 +207,7 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
         container.appendChild(item);
     });
 
+    // View More / Less
     document.querySelectorAll('.view-more').forEach(link => {
         link.onclick = e => {
             e.preventDefault();
@@ -232,6 +226,7 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
         };
     });
 
+    // Add to Cart
     document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
         btn.onclick = () => addToCart(parseInt(btn.dataset.id));
     });
@@ -371,7 +366,7 @@ function calculateTotal(subtotal) {
     totalEl.textContent = subtotal + shipping;
 }
 
-// === ORDER VIA WHATSAPP — NAME FIXED 100% ===
+// === ORDER VIA WHATSAPP ===
 document.getElementById('order-whatsapp')?.addEventListener('click', () => {
     const nameEl = document.getElementById('customer-name');
     const addrEl = document.getElementById('address');
@@ -420,7 +415,7 @@ Shipping: ${shipping} Rs ${shippingNote}
     window.open(`https://wa.me/${PHONE_NUMBER}?text=${encoded}`, '_blank');
 });
 
-// === ORDER VIA CALL — NAME INCLUDED ===
+// === ORDER VIA CALL ===
 document.getElementById('order-call')?.addEventListener('click', () => {
     const nameEl = document.getElementById('customer-name');
     const addrEl = document.getElementById('address');
@@ -464,7 +459,7 @@ Please confirm stock and arrange delivery.
     });
 });
 
-// === AUTO UPDATE ON ALL INPUTS (FIXED NAME BUG) ===
+// === AUTO UPDATE ON INPUTS ===
 document.getElementById('customer-name')?.addEventListener('input', () => {
     const subtotal = cart.reduce((sum, item) => {
         const p = products.find(x => x.id === item.id);
@@ -688,7 +683,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 800);
     }
 });
-// === SERVICE BOOKING: LAPTOP, MOBILE, PRINTER, CCTV, SOFTWARE ===
+
+// === SERVICE BOOKING ===
 document.addEventListener('service-book-whatsapp', () => {
     const name = document.getElementById('service-name')?.value.trim();
     const address = document.getElementById('service-address')?.value.trim();
@@ -727,13 +723,12 @@ ${issue}
     window.open(`https://wa.me/${PHONE_NUMBER}?text=${encoded}`, '_blank');
     showToast('Request sent successfully!', 'success');
     
-    // Optional: Reset form after send
     setTimeout(() => {
         document.getElementById('service-form').reset();
         document.getElementById('service-form').classList.remove('was-validated');
     }, 1000);
 });
-// === HOMEPAGE SERVICE BOOKING ===
+
 document.addEventListener('home-service-book', () => {
     const name = document.getElementById('home-name')?.value.trim();
     const address = document.getElementById('home-address')?.value.trim();
