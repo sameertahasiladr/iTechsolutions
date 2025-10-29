@@ -1,4 +1,4 @@
-// script.js – FINAL: View More/Less + Go to Cart + Amazon Images
+// script.js – FINAL: Fully Responsive + All Bugs Fixed
 const PHONE_NUMBER = '9545690700';
 const API_BASE = '/api';
 const CLOUDINARY_CLOUD = 'ddktvfhsb';
@@ -40,7 +40,6 @@ function checkAdminAuth() {
     }
 }
 
-// Login form
 document.getElementById('login-form')?.addEventListener('submit', e => {
     e.preventDefault();
     const u = document.getElementById('admin-username').value.trim();
@@ -48,7 +47,6 @@ document.getElementById('login-form')?.addEventListener('submit', e => {
     loginAdmin(u, p);
 });
 
-// Logout
 document.getElementById('admin-logout')?.addEventListener('click', () => {
     isAdminAuthenticated = false;
     showToast('Logged out.', 'success');
@@ -82,14 +80,14 @@ function renderAll() {
     if (document.getElementById('cart-items')) displayCart();
 }
 
-// === DISPLAY PRODUCTS WITH VIEW MORE/LESS ===
+// === DISPLAY PRODUCTS (FULLY RESPONSIVE) ===
 function displayProducts(container, list, isAdmin = false, isFeatured = false) {
     if (!container) return;
     container.innerHTML = '';
     let displayList = isFeatured ? list.slice(0, 3) : list;
 
     if (displayList.length === 0) {
-        container.innerHTML = '<div class="list-group-item text-muted text-center">No products available.</div>';
+        container.innerHTML = '<div class="text-center text-muted py-4">No products available.</div>';
         return;
     }
 
@@ -99,23 +97,22 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
         const inCart = cart.find(i => i.id === product.id);
         const quantity = inCart ? inCart.quantity : 0;
 
-        // Truncate description for preview (max 100 chars)
-        const shortDesc = product.description.length > 100 
-            ? product.description.substring(0, 100) + '...' 
+        const shortDesc = product.description.length > 80 
+            ? product.description.substring(0, 80) + '...' 
             : product.description;
 
         if (isFeatured) {
-            item.className = 'col';
+            item.className = 'col-12 col-md-6 col-lg-4';
             item.innerHTML = `
-                <div class="product-card card h-100 border-0 shadow">
-                    <div id="carousel-${product.id}" class="carousel slide" style="height:300px;">
+                <div class="product-card card h-100 border-0 shadow-sm">
+                    <div class="carousel slide" id="carousel-${product.id}" style="height:280px;">
                         <div class="carousel-inner h-100">
                             ${images.length > 0 ? images.map((img, i) => `
                                 <div class="carousel-item ${i === 0 ? 'active' : ''} h-100">
-                                    <img src="${img}" alt="${product.name}" class="d-block w-100 h-100" style="object-fit:contain;background:#fff;padding:1rem;">
+                                    <img src="${img}" alt="${product.name}" class="d-block w-100 h-100 object-fit-contain p-3 bg-white">
                                 </div>
                             `).join('') : `<div class="carousel-item active h-100">
-                                <img src="https://picsum.photos/300/300?random=${product.id}" alt="${product.name}" class="d-block w-100 h-100" style="object-fit:contain;background:#fff;padding:1rem;">
+                                <img src="https://picsum.photos/300/300?random=${product.id}" alt="${product.name}" class="d-block w-100 h-100 object-fit-contain p-3 bg-white">
                             </div>`}
                         </div>
                         ${images.length > 1 ? `
@@ -127,102 +124,99 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
                             </button>
                         ` : ''}
                     </div>
-                    <div class="card-body">
-                        <h5 class="card-title mb-1">${product.name}</h5>
-                        <p class="text-muted mb-1">Type: ${product.type.charAt(0).toUpperCase() + product.type.slice(1)}</p>
-                        <p class="price mb-1">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title mb-1 fs-6">${product.name}</h5>
+                        <p class="text-muted small mb-1">Type: ${product.type.charAt(0).toUpperCase() + product.type.slice(1)}</p>
+                        <p class="price mb-2">
                             ${product.discount 
                                 ? `<strong class="text-success">${product.discount} Rs</strong> <del class="text-muted small">${product.price} Rs</del>`
                                 : `<strong>${product.price} Rs</strong>`
                             }
                         </p>
-                        <p class="text-muted mb-2 desc-text" style="font-size:0.9rem;">
+                        <p class="text-muted small mb-2 desc-text">
                             <span class="short-desc">${shortDesc}</span>
-                            ${product.description.length > 100 ? `
+                            ${product.description.length > 80 ? `
                                 <span class="full-desc d-none">${product.description}</span>
-                                <a href="#" class="text-primary view-more" style="font-size:0.8rem;">View More</a>
+                                <a href="#" class="text-primary view-more fs-7">View More</a>
                             ` : ''}
                         </p>
-                        <div class="mt-2 d-flex gap-2">
-                            <button class="btn btn-outline-primary flex-fill add-to-cart-btn" data-id="${product.id}">
+                        <div class="mt-auto d-grid gap-2 d-md-flex">
+                            <button class="btn btn-outline-primary btn-sm add-to-cart-btn flex-fill" data-id="${product.id}">
                                 ${quantity > 0 ? `Added (${quantity})` : 'Add to Cart'}
                             </button>
-                            ${quantity > 0 ? `<a href="/cart.html" class="btn btn-primary flex-fill">Go to Cart</a>` : ''}
+                            ${quantity > 0 ? `<a href="/cart.html" class="btn btn-primary btn-sm flex-fill">Go to Cart</a>` : ''}
                         </div>
                     </div>
                 </div>
             `;
         } else {
-            item.classList.add('product-card', 'list-group-item', 'd-flex', 'align-items-center', 'p-3');
+            item.className = 'list-group-item p-3 p-md-4';
             item.innerHTML = `
-                <div class="image-container me-3">
-                    <div id="carousel-${product.id}" class="carousel slide" style="width:120px;height:120px;border:1px solid #dee2e6;border-radius:0.5rem;overflow:hidden;">
-                        <div class="carousel-inner h-100">
-                            ${images.length > 0 ? images.map((img, i) => `
-                                <div class="carousel-item ${i === 0 ? 'active' : ''} h-100">
-                                    <img src="${img}" alt="${product.name}" class="d-block w-100 h-100" style="object-fit:contain;background:#fff;padding:0.5rem;">
-                                </div>
-                            `).join('') : `<div class="carousel-item active h-100">
-                                <img src="https://picsum.photos/120/120?random=${product.id}" alt="${product.name}" class="d-block w-100 h-100" style="object-fit:contain;background:#fff;padding:0.5rem;">
-                            </div>`}
+                <div class="row align-items-center g-3">
+                    <div class="col-4 col-md-3 col-lg-2">
+                        <div class="carousel slide" id="carousel-${product.id}" style="height:100px;">
+                            <div class="carousel-inner h-100">
+                                ${images.length > 0 ? images.map((img, i) => `
+                                    <div class="carousel-item ${i === 0 ? 'active' : ''} h-100">
+                                        <img src="${img}" alt="${product.name}" class="d-block w-100 h-100 object-fit-contain p-2 bg-white rounded">
+                                    </div>
+                                `).join('') : `<div class="carousel-item active h-100">
+                                    <img src="https://picsum.photos/120/120?random=${product.id}" alt="${product.name}" class="d-block w-100 h-100 object-fit-contain p-2 bg-white rounded">
+                                </div>`}
+                            </div>
+                            ${images.length > 1 ? `
+                                <button class="carousel-control-prev" type="button" data-bs-target="#carousel-${product.id}" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon"></span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#carousel-${product.id}" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon"></span>
+                                </button>
+                            ` : ''}
                         </div>
-                        ${images.length > 1 ? `
-                            <button class="carousel-control-prev" type="button" data-bs-target="#carousel-${product.id}" data-bs-slide="prev">
-                                <span class="carousel-control-prev-icon"></span>
-                            </button>
-                            <button class="carousel-control-next" type="button" data-bs-target="#carousel-${product.id}" data-bs-slide="next">
-                                <span class="carousel-control-next-icon"></span>
-                            </button>
-                        ` : ''}
                     </div>
-                </div>
-                <div class="flex-grow-1">
-                    <h5 class="mb-1">${product.name}</h5>
-                    <p class="text-muted mb-1">Type: ${product.type.charAt(0).toUpperCase() + product.type.slice(1)}</p>
-                    <p class="price mb-1">
-                        ${product.discount 
-                            ? `<strong class="text-success">${product.discount} Rs</strong> <del class="text-muted small">${product.price} Rs</del>`
-                            : `<strong>${product.price} Rs</strong>`
-                        }
-                    </p>
-                    <p class="text-muted mb-0 desc-text" style="font-size:0.9rem;">
-                        <span class="short-desc">${shortDesc}</span>
-                        ${product.description.length > 100 ? `
-                            <span class="full-desc d-none">${product.description}</span>
-                            <a href="#" class="text-primary view-more" style="font-size:0.8rem;">View More</a>
-                        ` : ''}
-                    </p>
-                </div>
-                <div class="d-flex gap-2 align-items-center">
-                    <button class="btn btn-outline-primary add-to-cart-btn" data-id="${product.id}">
-                        ${quantity > 0 ? `Added (${quantity})` : 'Add'}
-                    </button>
-                    ${quantity > 0 ? `<a href="/cart.html" class="btn btn-primary">Go to Cart</a>` : ''}
+                    <div class="col-8 col-md-9 col-lg-10">
+                        <div class="d-flex flex-column h-100">
+                            <h5 class="mb-1 fs-6">${product.name}</h5>
+                            <p class="text-muted small mb-1">Type: ${product.type.charAt(0).toUpperCase() + product.type.slice(1)}</p>
+                            <p class="price mb-1">
+                                ${product.discount 
+                                    ? `<strong class="text-success">${product.discount} Rs</strong> <del class="text-muted small">${product.price} Rs</del>`
+                                    : `<strong>${product.price} Rs</strong>`
+                                }
+                            </p>
+                            <p class="text-muted small mb-2 desc-text">
+                                <span class="short-desc">${shortDesc}</span>
+                                ${product.description.length > 80 ? `
+                                    <span class="full-desc d-none">${product.description}</span>
+                                    <a href="#" class="text-primary view-more fs-7">View More</a>
+                                ` : ''}
+                            </p>
+                            <div class="mt-auto d-flex gap-2 flex-wrap">
+                                <button class="btn btn-outline-primary btn-sm add-to-cart-btn" data-id="${product.id}">
+                                    ${quantity > 0 ? `Added (${quantity})` : 'Add'}
+                                </button>
+                                ${quantity > 0 ? `<a href="/cart.html" class="btn btn-primary btn-sm">Go to Cart</a>` : ''}
+                                ${isAdmin ? `
+                                    <button class="btn btn-outline-primary btn-sm edit-btn">Edit</button>
+                                    <button class="btn btn-outline-danger btn-sm delete-btn">Delete</button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             `;
 
             if (isAdmin) {
-                const actions = document.createElement('div');
-                actions.className = 'd-flex gap-2 ms-3';
-                const edit = document.createElement('button');
-                edit.className = 'btn btn-outline-primary';
-                edit.innerHTML = 'Edit';
-                edit.onclick = () => editProduct(product.id);
-                const del = document.createElement('button');
-                del.className = 'btn btn-outline-danger';
-                del.innerHTML = 'Delete';
-                del.onclick = () => deleteProduct(product.id);
-                actions.appendChild(edit);
-                actions.appendChild(del);
-                item.querySelector('.d-flex.gap-2').appendChild(actions);
+                item.querySelector('.edit-btn').onclick = () => editProduct(product.id);
+                item.querySelector('.delete-btn').onclick = () => deleteProduct(product.id);
             }
         }
         container.appendChild(item);
     });
 
-    // === VIEW MORE / VIEW LESS TOGGLE ===
+    // View More / Less
     document.querySelectorAll('.view-more').forEach(link => {
-        link.onclick = (e) => {
+        link.onclick = e => {
             e.preventDefault();
             const parent = link.parentElement;
             const short = parent.querySelector('.short-desc');
@@ -239,36 +233,32 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
         };
     });
 
-    // === ADD TO CART BUTTONS ===
     document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
         btn.onclick = () => addToCart(parseInt(btn.dataset.id));
     });
 }
 
-// === ADD TO CART (UPDATE BUTTON + SHOW GO TO CART) ===
+// === ADD TO CART ===
 function addToCart(id) {
     const p = products.find(x => x.id === id);
     if (!p) return showToast('Product not found.', 'error');
 
     const item = cart.find(i => i.id === id);
-    if (item) {
-        item.quantity++;
-    } else {
-        cart.push({ id, quantity: 1 });
-    }
+    if (item) item.quantity++;
+    else cart.push({ id, quantity: 1 });
+
     localStorage.setItem('cart', JSON.stringify(cart));
     showToast(`${p.name} added!`, 'success');
 
-    // Update all "Add to Cart" buttons
     document.querySelectorAll(`.add-to-cart-btn[data-id="${id}"]`).forEach(btn => {
         const qty = cart.find(i => i.id === id).quantity;
         btn.textContent = `Added (${qty})`;
         btn.classList.replace('btn-outline-primary', 'btn-success');
-        
+
         if (!btn.parentElement.querySelector('a[href="/cart.html"]')) {
             const goToCart = document.createElement('a');
             goToCart.href = '/cart.html';
-            goToCart.className = 'btn btn-primary';
+            goToCart.className = 'btn btn-primary btn-sm';
             goToCart.textContent = 'Go to Cart';
             btn.parentElement.appendChild(goToCart);
         }
@@ -284,32 +274,30 @@ function displayCart() {
     container.innerHTML = '';
     let subtotal = 0;
 
-    cart = cart.filter(item => {
-        const exists = products.find(p => p.id === item.id);
-        if (!exists) return false;
-        return true;
-    });
+    cart = cart.filter(item => products.find(p => p.id === item.id));
     localStorage.setItem('cart', JSON.stringify(cart));
 
     cart.forEach(item => {
         const p = products.find(x => x.id === item.id);
         const img = (p.images?.[0]) || 'https://picsum.photos/100?random=0';
         const cartItem = document.createElement('div');
-        cartItem.className = 'cart-item list-group-item d-flex align-items-center p-3';
+        cartItem.className = 'list-group-item p-3';
         cartItem.innerHTML = `
-            <img src="${img}" alt="${p.name}" style="width:90px;height:90px;object-fit:contain;background:#fff;border:1px solid #dee2e6;border-radius:0.5rem;padding:0.5rem;margin-right:1rem;">
-            <div class="flex-grow-1">
-                <h5 class="mb-1">${p.name}</h5>
-                <p class="text-muted mb-1">
-                    Price: 
-                    ${p.discount 
-                        ? `<strong class="text-success">${p.discount} Rs</strong> <del class="text-muted small">${p.price} Rs</del>`
-                        : `<strong>${p.price} Rs</strong>`
-                    }
-                </p>
-                <p class="text-muted mb-0">Qty: <input type="number" value="${item.quantity}" min="1" class="form-control d-inline-block w-auto"></p>
+            <div class="row align-items-center g-3">
+                <div class="col-3 col-md-2">
+                    <img src="${img}" alt="${p.name}" class="img-fluid rounded" style="height:80px;object-fit:contain;background:#fff;">
+                </div>
+                <div class="col-9 col-md-10">
+                    <h6 class="mb-1">${p.name}</h6>
+                    <p class="mb-1 small text-muted">
+                        Price: ${p.discount ? `<strong class="text-success">${p.discount} Rs</strong> <del>${p.price} Rs</del>` : `<strong>${p.price} Rs</strong>`}
+                    </p>
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="number" value="${item.quantity}" min="1" class="form-control form-control-sm w-auto">
+                        <button class="btn btn-outline-danger btn-sm">Remove</button>
+                    </div>
+                </div>
             </div>
-            <button class="btn btn-outline-danger">Remove</button>
         `;
         cartItem.querySelector('input').onchange = e => updateQuantity(item.id, e.target.value);
         cartItem.querySelector('button').onclick = () => removeFromCart(item.id);
@@ -318,7 +306,7 @@ function displayCart() {
     });
 
     if (cart.length === 0) {
-        container.innerHTML = '<div class="list-group-item text-muted text-center">Your cart is empty.</div>';
+        container.innerHTML = '<div class="text-center text-muted py-4">Your cart is empty.</div>';
     }
     calculateTotal(subtotal);
 }
@@ -397,7 +385,8 @@ document.getElementById('images')?.addEventListener('change', e => {
         reader.onload = ev => {
             const img = document.createElement('img');
             img.src = ev.target.result;
-            img.style.cssText = 'width:100px;height:100px;object-fit:contain;background:#fff;border:1px solid #dee2e6;border-radius:0.5rem;padding:0.5rem;margin:4px;';
+            img.className = 'img-thumbnail';
+            img.style.cssText = 'width:80px;height:80px;object-fit:contain;margin:4px;';
             preview.appendChild(img);
         };
         reader.readAsDataURL(file);
@@ -437,9 +426,7 @@ document.getElementById('save-product')?.addEventListener('click', async () => {
                 body: formData
             });
             const data = await res.json();
-            if (data.secure_url) {
-                images.push(data.secure_url);
-            }
+            if (data.secure_url) images.push(data.secure_url);
         } catch (err) {
             showToast('Image upload failed', 'error');
             return;
@@ -492,7 +479,8 @@ function editProduct(id) {
     (p.images || []).forEach(img => {
         const el = document.createElement('img');
         el.src = img;
-        el.style.cssText = 'width:100px;height:100px;object-fit:contain;background:#fff;border:1px solid #dee2e6;border-radius:0.5rem;padding:0.5rem;margin:4px;';
+        el.className = 'img-thumbnail';
+        el.style.cssText = 'width:80px;height:80px;object-fit:contain;margin:4px;';
         preview.appendChild(el);
     });
     new bootstrap.Modal(document.getElementById('productModal')).show();
@@ -592,11 +580,6 @@ if (window.location.pathname.includes('admin.html')) {
 } else {
     document.addEventListener('DOMContentLoaded', () => {
         loadProducts();
-        setTimeout(() => {
-            document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
-                btn.onclick = () => addToCart(parseInt(btn.dataset.id));
-            });
-        }, 500);
     });
 }
 
