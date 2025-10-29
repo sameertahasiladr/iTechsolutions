@@ -80,7 +80,7 @@ function renderAll() {
     if (document.getElementById('cart-items')) displayCart();
 }
 
-// === DISPLAY PRODUCTS – AMAZON STYLE + VIEW MORE ===
+// === DISPLAY PRODUCTS – FIXED VIEW MORE & BUTTONS ===
 function displayProducts(container, list, isAdmin = false, isFeatured = false) {
     if (!container) return;
     container.innerHTML = '';
@@ -151,8 +151,8 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
                                     <img src="${img}" alt="${product.name}" class="d-block w-100 h-100 object-fit-cover rounded">
                                 </div>
                             `).join('') : `<div class="carousel-item active h-100">
-                                <img src="https://picsum.photos/120/120?random=${product.id}" alt="${product.name}" class="d-block w-100 h-100 object-fit-cover rounded">
-                            </div>`}
+                                    <img src="https://picsum.photos/120/120?random=${product.id}" alt="${product.name}" class="d-block w-100 h-100 object-fit-cover rounded">
+                                </div>`}
                         </div>
                         ${images.length > 1 ? `
                             <button class="carousel-control-prev" type="button" data-bs-target="#carousel-${product.id}" data-bs-slide="prev">
@@ -206,36 +206,37 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
         container.appendChild(item);
     });
 
-    // === VIEW MORE TOGGLE ===
+    // === VIEW MORE – FIXED ===
     container.querySelectorAll('.view-more').forEach(btn => {
-        btn.onclick = () => {
-            const short = btn.parentElement.querySelector('.description-short');
-            const full = btn.parentElement.querySelector('.description-full');
+        btn.addEventListener('click', function () {
+            const cardBody = this.closest('.card-body') || this.parentElement;
+            const short = cardBody.querySelector('.description-short');
+            const full = cardBody.querySelector('.description-full');
             if (short && full) {
-                short.classList.add('d-none');
-                full.classList.remove('d-none');
-                btn.textContent = 'View Less';
-                btn.onclick = () => {
+                if (short.classList.contains('d-none')) {
                     full.classList.add('d-none');
                     short.classList.remove('d-none');
-                    btn.textContent = 'View More';
-                    btn.onclick = arguments.callee;
-                };
+                    this.textContent = 'View More';
+                } else {
+                    short.classList.add('d-none');
+                    full.classList.remove('d-none');
+                    this.textContent = 'View Less';
+                }
             }
-        };
+        });
     });
 
-    // === ADD TO CART BUTTONS ===
+    // === ADD TO CART – FIXED "GO TO CART" ===
     container.querySelectorAll('.add-to-cart-btn').forEach(btn => {
-        btn.onclick = (e) => {
+        btn.addEventListener('click', function (e) {
             e.stopPropagation();
-            const id = parseInt(btn.dataset.id);
-            addToCart(id, btn);
-        };
+            const id = parseInt(this.dataset.id);
+            addToCart(id, this); // Pass button element
+        });
     });
 }
 
-// === ADD TO CART – GO TO CART BUTTON ===
+// === ADD TO CART – FIXED BUTTON CHANGE ===
 function addToCart(id, btnElement) {
     const p = products.find(x => x.id === id);
     if (!p) return showToast('Product not found.', 'error');
@@ -247,17 +248,18 @@ function addToCart(id, btnElement) {
     localStorage.setItem('cart', JSON.stringify(cart));
     showToast(`${p.name} added!`, 'success');
 
-    // Change button to "Go to Cart"
-    if (btnElement) {
+    // CHANGE BUTTON TO "GO TO CART"
+    if (btnElement && !btnElement.disabled) {
         btnElement.disabled = true;
         btnElement.innerHTML = 'Go to Cart';
         btnElement.className = 'btn btn-success mt-auto w-100';
-        btnElement.onclick = () => window.location.href = '/cart.html';
+        btnElement.onclick = () => {
+            window.location.href = '/cart.html';
+        };
     }
 
     if (document.getElementById('cart-items')) displayCart();
 }
-
 // === CART DISPLAY ===
 function displayCart() {
     const container = document.getElementById('cart-items');
