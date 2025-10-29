@@ -133,9 +133,12 @@ main {
     max-width: 400px;
     margin: 0 auto;
 }
-/* FIX: View More spacing */
-.description-short + .view-more,
-.description-full + .view-more {
+.description-container {
+    position: relative;
+}
+
+.view-more {
     display: inline-block;
     margin-left: 0.25rem;
+    font-size: 0.85rem;
 }
