@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
         <div class="container-fluid">
             <a class="navbar-brand fw-bold text-uppercase" href="/index.html">iTech Solutions</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -29,94 +29,74 @@
         </div>
     </nav>
 
-    <main class="p-4">
+    <main class="p-3 p-md-4">
 
-   <!-- HERO – MOBILE & DESKTOP PERFECT -->
-<section class="hero position-relative text-center text-white overflow-hidden">
-    <!-- Background Image -->
-    <div class="hero-bg position-absolute top-0 start-0 w-100 h-100" 
-         style="background: url('https://cdn.thewirecutter.com/wp-content/media/2024/10/BEST-BLUETOOTHT-AUDIO-RECEIVERS-2048px-4664-2x1-1.jpg?width=2048&quality=75&crop=2:1&auto=webp') center/cover no-repeat; filter: brightness(0.6); z-index: 1;">
-    </div>
-    
-    <!-- Dark Overlay -->
-    <div class="position-absolute top-0 start-0 w-100 h-100" style="background: rgba(0, 0, 0, 0.6); z-index: 2;"></div>
+        <!-- HERO – FULLY RESPONSIVE -->
+        <section class="hero position-relative text-center text-white overflow-hidden">
+            <div class="hero-bg position-absolute top-0 start-0 w-100 h-100" 
+                 style="background: url('https://cdn.thewirecutter.com/wp-content/media/2024/10/BEST-BLUETOOTHT-AUDIO-RECEIVERS-2048px-4664-2x1-1.jpg?width=2048&quality=75&crop=2:1&auto=webp') center/cover no-repeat; filter: brightness(0.6); z-index: 1;">
+            </div>
+            <div class="position-absolute top-0 start-0 w-100 h-100" style="background: rgba(0, 0, 0, 0.6); z-index: 2;"></div>
 
-    <!-- Content -->
-    <div class="container-xl position-relative py-4 py-md-5 px-3 px-md-4" style="z-index: 3;">
-        <div class="row justify-content-center">
-            <div class="col-12 col-lg-10 col-xl-8">
-                <!-- Title -->
-                <h1 class="display-5 display-md-4 fw-bold mb-2 text-shadow">Welcome to iTech Solutions</h1>
-                
-                <!-- Subtitle -->
-                <p class="lead mb-3 fs-6 text-shadow d-none d-md-block">
-                    Discover premium new and refurbished <strong>laptops, mobiles, printers, and PCs</strong> at unbeatable prices.
-                </p>
-                <p class="lead mb-3 fs-6 text-shadow d-md-none">
-                    Premium laptops, mobiles, printers & PCs
-                </p>
-                
-                <!-- Search Bar -->
-                <div class="mb-3">
-                    <input type="text" id="home-search" placeholder="Search for laptops, mobiles, printers..." 
-                           class="form-control form-control-lg rounded-pill shadow-sm bg-white text-dark px-4" 
-                           style="max-width: 100%; font-size: 0.95rem;">
-                </div>
-
-                <!-- Buttons -->
-                <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center">
-                    <a href="/products.html" class="btn btn-light btn-md px-4 shadow-sm text-dark fw-semibold">
-                        Shop Now
-                    </a>
-                    <a href="#service-booking" class="btn btn-outline-light btn-md px-4 shadow-sm border-2">
-                        Book Service
-                    </a>
+            <div class="container-xl position-relative py-4 py-md-5 px-3 px-md-4" style="z-index: 3;">
+                <div class="row justify-content-center">
+                    <div class="col-12 col-lg-10 col-xl-8">
+                        <h1 class="hero-title fw-bold mb-2 text-shadow">Welcome to iTech Solutions</h1>
+                        <p class="hero-subtitle mb-3 text-shadow">
+                            Discover premium new and refurbished <strong>laptops, mobiles, printers, and PCs</strong> at unbeatable prices.
+                        </p>
+                        <div class="hero-search mb-3">
+                            <input type="text" id="home-search" placeholder="Search for laptops, mobiles, printers..." 
+                                   class="form-control form-control-lg rounded-pill shadow-sm bg-white text-dark px-4">
+                        </div>
+                        <div class="hero-buttons d-flex flex-column flex-sm-row gap-2 justify-content-center">
+                            <a href="/products.html" class="btn btn-light btn-hero px-4 shadow-sm text-dark fw-semibold">
+                                Shop Now
+                            </a>
+                            <a href="#service-booking" class="btn btn-outline-light btn-hero px-4 shadow-sm border-2">
+                                Book Service
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-</section>
+        </section>
+
         <!-- FEATURED PRODUCTS -->
-        <section class="featured-products mb-5">
+        <section class="featured-products py-4 py-md-5">
             <div class="container-xl">
                 <h2 class="h2 fw-bold text-center mb-4">Featured Products</h2>
                 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 g-md-4" id="featured-products"></div>
                 <div class="text-center mt-4">
-                    <a href="/products.html" class="btn btn-outline-primary">View All Products</a>
+                    <a href="/products.html" class="btn btn-outline-primary btn-sm">View All Products</a>
                 </div>
             </div>
         </section>
 
         <!-- WHY US -->
-        <section class="why-us mb-5">
+        <section class="why-us py-4 py-md-5 bg-light">
             <div class="container-xl">
                 <h2 class="h2 fw-bold text-center mb-4">Why Choose iTech Solutions?</h2>
                 <div class="row row-cols-1 row-cols-md-3 g-4">
                     <div class="col">
-                        <div class="card h-100 border-0 shadow text-center">
-                            <div class="card-body">
-                                <i class="bi bi-star-fill text-primary display-4 mb-3"></i>
-                                <h5 class="card-title">Quality Assured</h5>
-                                <p class="text-muted">All products, new and refurbished, are rigorously tested.</p>
-                            </div>
+                        <div class="card h-100 border-0 shadow text-center p-3">
+                            <i class="bi bi-star-fill text-primary display-4 mb-3"></i>
+                            <h5 class="card-title">Quality Assured</h5>
+                            <p class="text-muted small">All products, new and refurbished, are rigorously tested.</p>
                         </div>
                     </div>
                     <div class="col">
-                        <div class="card h-100 border-0 shadow text-center">
-                            <div class="card-body">
-                                <i class="bi bi-wallet2 text-primary display-4 mb-3"></i>
-                                <h5 class="card-title">Affordable Prices</h5>
-                                <p class="text-muted">Competitive prices with exclusive discounts.</p>
-                            </div>
+                        <div class="card h-100 border-0 shadow text-center p-3">
+                            <i class="bi bi-wallet2 text-primary display-4 mb-3"></i>
+                            <h5 class="card-title">Affordable Prices</h5>
+                            <p class="text-muted small">Competitive prices with exclusive discounts.</p>
                         </div>
                     </div>
                     <div class="col">
-                        <div class="card h-100 border-0 shadow text-center">
-                            <div class="card-body">
-                                <i class="bi bi-recycle text-primary display-4 mb-3"></i>
-                                <h5 class="card-title">Sustainable Choice</h5>
-                                <p class="text-muted">Eco-friendly refurbished tech.</p>
-                            </div>
+                        <div class="card h-100 border-0 shadow text-center p-3">
+                            <i class="bi bi-recycle text-primary display-4 mb-3"></i>
+                            <h5 class="card-title">Sustainable Choice</h5>
+                            <p class="text-muted small">Eco-friendly refurbished tech.</p>
                         </div>
                     </div>
                 </div>
@@ -124,43 +104,41 @@
         </section>
 
         <!-- ABOUT US -->
-        <section class="about mb-5">
+        <section class="about py-4 py-md-5">
             <div class="container-xl">
                 <h2 class="h2 fw-bold text-center mb-4">About Us</h2>
                 <div class="bg-white p-4 rounded shadow text-center">
                     <p class="lead text-muted mb-4">Based in Goa, India, iTech Solutions is your trusted destination for premium tech products.</p>
-                    <a href="/about.html" class="btn btn-outline-primary">Learn More</a>
+                    <a href="/about.html" class="btn btn-outline-primary btn-sm">Learn More</a>
                 </div>
             </div>
         </section>
 
-        <!-- SERVICE BOOKING FORM -->
-        <section class="service-booking mb-5" id="service-booking">
+        <!-- SERVICE BOOKING -->
+        <section class="service-booking py-4 py-md-5" id="service-booking">
             <div class="container-xl">
                 <h2 class="h2 fw-bold text-center mb-4">
                     <i class="bi bi-tools text-primary me-2"></i>Book a Service
                 </h2>
-                <p class="text-center text-muted mb-5">Laptop • Mobile • Printer • Desktop • CCTV • Software Issues</p>
+                <p class="text-center text-muted mb-5 small">Laptop • Mobile • Printer • Desktop • CCTV • Software Issues</p>
 
                 <div class="row justify-content-center">
-                    <div class="col-12 col-md-8 col-lg-6">
+                    <div class="col-12 col-md-10 col-lg-8 col-xl-6">
                         <div class="card shadow border-0">
                             <div class="card-body p-4 p-md-5">
                                 <form id="home-service-form" class="needs-validation" novalidate>
                                     <div class="row g-3">
                                         <div class="col-12">
-                                            <label for="home-name" class="form-label fw-semibold">Full Name <span class="text-danger">*</span></label>
-                                            <input type="text" id="home-name" class="form-control form-control-lg" placeholder="e.g. Rahul Sharma" required>
-                                            <div class="invalid-feedback">Please enter your name.</div>
+                                            <label for="home-name" class="form-label fw-semibold small">Full Name <span class="text-danger">*</span></label>
+                                            <input type="text" id="home-name" class="form-control" placeholder="e.g. Rahul Sharma" required>
                                         </div>
                                         <div class="col-12">
-                                            <label for="home-address" class="form-label fw-semibold">Full Address <span class="text-danger">*</span></label>
-                                            <input type="text" id="home-address" class="form-control form-control-lg" placeholder="House no., Mardol, Goa" required>
-                                            <div class="invalid-feedback">Please enter your address.</div>
+                                            <label for="home-address" class="form-label fw-semibold small">Full Address <span class="text-danger">*</span></label>
+                                            <input type="text" id="home-address" class="form-control" placeholder="House no., Mardol, Goa" required>
                                         </div>
                                         <div class="col-12 col-md-6">
-                                            <label for="home-product" class="form-label fw-semibold">Device / Issue <span class="text-danger">*</span></label>
-                                            <select id="home-product" class="form-select form-select-lg" required>
+                                            <label for="home-product" class="form-label fw-semibold small">Device / Issue <span class="text-danger">*</span></label>
+                                            <select id="home-product" class="form-select" required>
                                                 <option value="" disabled selected>Select</option>
                                                 <option value="Laptop">Laptop</option>
                                                 <option value="Mobile Phone">Mobile Phone</option>
@@ -169,19 +147,17 @@
                                                 <option value="CCTV System">CCTV System</option>
                                                 <option value="Software Crash / App Issue">Software Crash / App Issue</option>
                                             </select>
-                                            <div class="invalid-feedback">Please select a device.</div>
                                         </div>
                                         <div class="col-12 col-md-6">
-                                            <label for="home-model" class="form-label fw-semibold">Brand & Model</label>
-                                            <input type="text" id="home-model" class="form-control form-control-lg" placeholder="e.g. Dell XPS 13">
+                                            <label for="home-model" class="form-label fw-semibold small">Brand & Model</label>
+                                            <input type="text" id="home-model" class="form-control" placeholder="e.g. Dell XPS 13">
                                         </div>
                                         <div class="col-12">
-                                            <label for="home-issue" class="form-label fw-semibold">Describe the Problem <span class="text-danger">*</span></label>
-                                            <textarea id="home-issue" class="form-control form-control-lg" rows="4" placeholder="e.g. Laptop not charging, screen flickering..." required></textarea>
-                                            <div class="invalid-feedback">Please describe the issue.</div>
+                                            <label for="home-issue" class="form-label fw-semibold small">Describe the Problem <span class="text-danger">*</span></label>
+                                            <textarea id="home-issue" class="form-control" rows="3" placeholder="e.g. Laptop not charging..." required></textarea>
                                         </div>
                                         <div class="col-12">
-                                            <button type="button" id="home-book-whatsapp" class="btn btn-success btn-lg w-100 shadow-sm">
+                                            <button type="button" id="home-book-whatsapp" class="btn btn-success w-100 shadow-sm">
                                                 <i class="bi bi-whatsapp me-2"></i>Send via WhatsApp
                                             </button>
                                         </div>
@@ -195,28 +171,26 @@
         </section>
 
         <!-- CONTACT -->
-        <section class="contact mb-5">
+        <section class="contact py-4 py-md-5 bg-light">
             <div class="container-xl text-center">
                 <h2 class="h2 fw-bold mb-4">Get in Touch</h2>
                 <p class="lead text-muted mb-4">Contact us via call or WhatsApp.</p>
-                <div class="d-flex flex-wrap gap-3 justify-content-center">
-                    <a href="tel:9545690700" class="btn btn-outline-primary"><i class="bi bi-telephone me-2"></i>Call Us</a>
-                    <a href="https://wa.me/9545690700" target="_blank" class="btn btn-outline-primary"><i class="bi bi-whatsapp me-2"></i>WhatsApp</a>
+                <div class="d-flex flex-wrap gap-2 justify-content-center">
+                    <a href="tel:9545690700" class="btn btn-outline-primary btn-sm"><i class="bi bi-telephone me-2"></i>Call Us</a>
+                    <a href="https://wa.me/9545690700" target="_blank" class="btn btn-outline-primary btn-sm"><i class="bi bi-whatsapp me-2"></i>WhatsApp</a>
                 </div>
             </div>
         </section>
 
         <!-- FOOTER -->
-        <footer class="text-center py-4 mt-5 border-top">
+        <footer class="text-center py-4 mt-5 border-top bg-white">
             <p class="mb-0 text-muted small">© 2025 iTech Solutions. All rights reserved.</p>
         </footer>
     </main>
 
-    <!-- SCRIPTS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/script.js"></script>
 
-    <!-- FORM VALIDATION + WHATSAPP -->
     <script>
         (() => {
             'use strict';
