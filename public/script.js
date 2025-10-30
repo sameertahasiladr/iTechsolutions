@@ -1,4 +1,4 @@
-// script.js – FINAL: ALL ERRORS FIXED
+// script.js – FINAL: ALL ERRORS FIXED + SEARCH FULLY WORKING
 const PHONE_NUMBER = '9545690700';
 const API_BASE = '/api';
 const CLOUDINARY_CLOUD = 'ddktvfhsb';
@@ -332,9 +332,9 @@ function displayCart() {
             </div>
         `;
         const input = cartItem.querySelector('input');
-        const removeBtn = cartItem.querySelector('.remove-cart-btn'); // FIXED
+        const removeBtn = cartItem.querySelector('.remove-cart-btn');
         if (input) input.onchange = e => updateQuantity(item.id, e.target.value);
-        if (removeBtn) removeBtn.onclick = () => removeFromCart(item.id); // FIXED
+        if (removeBtn) removeBtn.onclick = () => removeFromCart(item.id);
         container.appendChild(cartItem);
         subtotal += (p.discount || p.price) * item.quantity;
     });
@@ -613,7 +613,7 @@ async function deleteProduct(id) {
     });
 }
 
-// === FILTERS & SEARCH ===
+// === FILTERS & SEARCH (PRODUCTS PAGE) ===
 if (document.getElementById('search')) {
     const urlParams = new URLSearchParams(window.location.search);
     const urlSearch = urlParams.get('search') || '';
@@ -642,10 +642,10 @@ if (document.getElementById('search')) {
     apply();
 }
 
-// === HERO SEARCH ===
+// === HERO SEARCH (FIXED) ===
 document.getElementById('hero-search-form')?.addEventListener('submit', (e) => {
     e.preventDefault();
-    const query = document.getElementById('home-search').value.trim();
+    const query = document.getElementById('home-search')?.value.trim();
     if (query) {
         window.location.href = `/products.html?search=${encodeURIComponent(query)}`;
     } else {
@@ -653,14 +653,15 @@ document.getElementById('hero-search-form')?.addEventListener('submit', (e) => {
     }
 });
 
-// === LIVE SEARCH FROM HOME ===
+// === LIVE SEARCH FROM HOME (FIXED & DEBOUNCED) ===
+let searchTimer;
 document.getElementById('home-search')?.addEventListener('input', function() {
     const query = this.value.trim();
+    clearTimeout(searchTimer);
     if (query.length >= 2) {
-        clearTimeout(this._timer);
-        this._timer = setTimeout(() => {
+        searchTimer = setTimeout(() => {
             window.location.href = `/products.html?search=${encodeURIComponent(query)}`;
-        }, 800);
+        }, 600);
     }
 });
 
