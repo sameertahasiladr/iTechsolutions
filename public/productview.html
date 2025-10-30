@@ -67,7 +67,7 @@
 
                     <div class="mt-3 text-center">
                         <a href="/products.html" class="btn btn-link text-muted">
-                            <i class="bi bi-arrow-left"></i> Back to Products
+                            Back to Products
                         </a>
                     </div>
                 </div>
@@ -83,7 +83,24 @@
     <script>
         // === PRODUCT VIEW – FULLY WORKING ===
         let products = [];
-        let cart = JSON.parse(localStorage.getItem('cart') || '[]'); // FIXED: Load cart
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+
+        // === TOAST FUNCTION ===
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-white bg-${type === 'error' ? 'danger' : 'success'} border-0 shadow-sm position-fixed`;
+            toast.style.cssText = 'top:1rem; right:1rem; z-index:9999; min-width:280px;';
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">${message}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+            document.body.appendChild(toast);
+            const bsToast = new bootstrap.Toast(toast, { delay: 3000 });
+            bsToast.show();
+            setTimeout(() => toast.remove(), 3500);
+        }
 
         async function loadProducts() {
             try {
@@ -129,11 +146,9 @@
                 return;
             }
 
-            // Title
             document.getElementById('product-name').textContent = product.name;
             document.getElementById('product-type').textContent = `Type: ${product.type.charAt(0).toUpperCase() + product.type.slice(1)}`;
 
-            // Price
             const priceEl = document.getElementById('product-price');
             if (product.discount) {
                 priceEl.innerHTML = `<strong class="text-success fs-4">${product.discount} Rs</strong> <del class="text-muted ms-2">${product.price} Rs</del>`;
@@ -141,10 +156,8 @@
                 priceEl.innerHTML = `<strong class="fs-4">${product.price} Rs</strong>`;
             }
 
-            // Description
             document.getElementById('product-description').innerHTML = product.description.replace(/\n/g, '<br>');
 
-            // Images
             const carouselInner = document.getElementById('carousel-images');
             const images = product.images && product.images.length > 0 ? product.images : ['https://picsum.photos/600/400?random=' + id];
             images.forEach((img, i) => {
@@ -154,7 +167,6 @@
                 carouselInner.appendChild(item);
             });
 
-            // Cart Button Logic
             const cartBtn = document.getElementById('add-to-cart-btn');
             const goBtn = document.getElementById('go-to-cart-btn');
             const inCart = cart.find(i => i.id === id);
@@ -166,29 +178,28 @@
                 goBtn.classList.remove('d-none');
             }
 
-            cartBtn.onclick = () => {
-                addToCart(id);
-                const updated = cart.find(i => i.id === id);
-                cartBtn.textContent = `Added (${updated.quantity})`;
-                cartBtn.classList.replace('btn-outline-primary', 'btn-success');
-                goBtn.classList.remove('d-none');
-            };
+            cartBtn.onclick = () => addToCart(id);
         }
 
-        // === ADD TO CART FUNCTION (LOCAL) ===
         function addToCart(id) {
             const p = products.find(x => x.id === id);
-            if (!p) return alert('Product not found.');
+            if (!p) return showToast('Product not found.', 'error');
 
             const item = cart.find(i => i.id === id);
             if (item) item.quantity++;
             else cart.push({ id, quantity: 1 });
 
             localStorage.setItem('cart', JSON.stringify(cart));
-            alert(`${p.name} added to cart!`);
+            showToast(`${p.name} added!`, 'success');
+
+            const cartBtn = document.getElementById('add-to-cart-btn');
+            const goBtn = document.getElementById('go-to-cart-btn');
+            const qty = cart.find(i => i.id === id).quantity;
+            cartBtn.textContent = `Added (${qty})`;
+            cartBtn.classList.replace('btn-outline-primary', 'btn-success');
+            goBtn.classList.remove('d-none');
         }
 
-        // === LOAD ON START ===
         loadProducts();
     </script>
 </body>

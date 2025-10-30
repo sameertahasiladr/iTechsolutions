@@ -1,4 +1,4 @@
-// script.js – FINAL: PRODUCT VIEW + MOBILE-FRIENDLY + ALL FEATURES
+// script.js – FINAL: ALL ERRORS FIXED
 const PHONE_NUMBER = '9545690700';
 const API_BASE = '/api';
 const CLOUDINARY_CLOUD = 'ddktvfhsb';
@@ -80,7 +80,7 @@ function renderAll() {
     if (document.getElementById('cart-items')) displayCart();
 }
 
-// === DISPLAY PRODUCTS (WITH PRODUCT VIEW LINKS) ===
+// === DISPLAY PRODUCTS ===
 function displayProducts(container, list, isAdmin = false, isFeatured = false) {
     if (!container) return;
     container.innerHTML = '';
@@ -127,7 +127,6 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
             ? product.description.substring(0, 80) + '...' 
             : product.description;
 
-        // === FEATURED PRODUCT CARD ===
         if (isFeatured) {
             item.className = 'col-12 col-sm-6 col-md-4';
             item.innerHTML = `
@@ -165,9 +164,7 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
                     </div>
                 </div>
             `;
-        } 
-        // === PRODUCT LIST ITEM ===
-        else {
+        } else {
             item.className = 'list-group-item p-3 p-md-4';
             item.style.cursor = 'pointer';
             item.onclick = (e) => {
@@ -234,7 +231,6 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
         container.appendChild(item);
     });
 
-    // View More / Less
     document.querySelectorAll('.view-more').forEach(link => {
         if (link.href.includes('productview.html')) return;
         link.onclick = (e) => {
@@ -255,7 +251,6 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
         };
     });
 
-    // Add to Cart
     document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
         btn.onclick = (e) => {
             e.stopPropagation();
@@ -291,19 +286,6 @@ function addToCart(id) {
     });
 
     if (document.getElementById('cart-items')) displayCart();
-
-    // Update product view page if open
-    const viewButtons = document.querySelectorAll('#add-to-cart-btn');
-    viewButtons.forEach(btn => {
-        const viewId = new URLSearchParams(window.location.search).get('id');
-        if (viewId && parseInt(viewId) === id) {
-            const qty = cart.find(i => i.id === id).quantity;
-            btn.textContent = `Added (${qty})`;
-            btn.classList.replace('btn-outline-primary', 'btn-success');
-            const goBtn = document.getElementById('go-to-cart-btn');
-            if (goBtn) goBtn.classList.remove('d-none');
-        }
-    });
 }
 
 // === CART DISPLAY + AUTO UPDATE ===
@@ -350,9 +332,9 @@ function displayCart() {
             </div>
         `;
         const input = cartItem.querySelector('input');
-        const removeBtn = cartItem.querySelector('remove-cart-btn');
-        input.onchange = e => updateQuantity(item.id, e.target.value);
-        removeBtn.onclick = () => removeFromCart(item.id);
+        const removeBtn = cartItem.querySelector('.remove-cart-btn'); // FIXED
+        if (input) input.onchange = e => updateQuantity(item.id, e.target.value);
+        if (removeBtn) removeBtn.onclick = () => removeFromCart(item.id); // FIXED
         container.appendChild(cartItem);
         subtotal += (p.discount || p.price) * item.quantity;
     });
@@ -631,7 +613,7 @@ async function deleteProduct(id) {
     });
 }
 
-// === FILTERS & SEARCH (LIVE + URL SUPPORT) ===
+// === FILTERS & SEARCH ===
 if (document.getElementById('search')) {
     const urlParams = new URLSearchParams(window.location.search);
     const urlSearch = urlParams.get('search') || '';
@@ -660,7 +642,7 @@ if (document.getElementById('search')) {
     apply();
 }
 
-// === HERO SEARCH → PRODUCTS PAGE ===
+// === HERO SEARCH ===
 document.getElementById('hero-search-form')?.addEventListener('submit', (e) => {
     e.preventDefault();
     const query = document.getElementById('home-search').value.trim();
