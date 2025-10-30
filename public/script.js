@@ -1,4 +1,4 @@
-// script.js – FINAL: SEARCH FROM HOME & PRODUCTS PAGE FULLY WORKING
+// script.js – FINAL: SEARCH FULLY FIXED (HOME + PRODUCTS PAGE + BACKSPACE WORKS)
 const PHONE_NUMBER = '9545690700';
 const API_BASE = '/api';
 const CLOUDINARY_CLOUD = 'ddktvfhsb';
@@ -7,7 +7,7 @@ const CLOUDINARY_PRESET = 'itechsolution';
 let products = [];
 let cart = JSON.parse(localStorage.getItem('cart') || '[]');
 let isAdminAuthenticated = false;
-let searchTimer; // GLOBAL DEBOUNCE TIMER
+let searchTimer; // GLOBAL DEBOUNCE FOR HOME SEARCH
 
 // === ADMIN AUTH ===
 async function loginAdmin(username, password) {
@@ -73,7 +73,7 @@ function renderAll() {
         displayProducts(document.getElementById('featured-products'), products, false, true);
     }
     if (document.getElementById('product-list')) {
-        applySearchFilter(); // REAPPLY FILTER ON LOAD
+        applyProductPageFilters(); // APPLY FILTERS ON LOAD
     }
     if (document.getElementById('admin-product-list') && isAdminAuthenticated) {
         displayProducts(document.getElementById('admin-product-list'), products, true);
@@ -260,30 +260,33 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
     });
 }
 
-// === APPLY SEARCH FILTER (PRODUCTS PAGE) ===
-function applySearchFilter() {
+// === APPLY FILTERS ON PRODUCTS PAGE (NO REDIRECT) ===
+function applyProductPageFilters() {
     const container = document.getElementById('product-list');
     if (!container) return;
 
     const urlParams = new URLSearchParams(window.location.search);
     const urlSearch = urlParams.get('search') || '';
     const searchInput = document.getElementById('search');
-    if (searchInput) searchInput.value = urlSearch;
+    if (searchInput && urlSearch) {
+        searchInput.value = urlSearch;
+    }
 
     let list = products;
 
-    // Search
-    if (urlSearch) {
-        list = list.filter(p => p.name.toLowerCase().includes(urlSearch.toLowerCase()));
+    // Apply search
+    const currentSearch = searchInput?.value.toLowerCase() || '';
+    if (currentSearch) {
+        list = list.filter(p => p.name.toLowerCase().includes(currentSearch));
     }
 
-    // Type filter
+    // Apply type filter
     const typeFilter = document.getElementById('type-filter')?.value;
     if (typeFilter) {
         list = list.filter(p => p.type === typeFilter);
     }
 
-    // Sort
+    // Apply sort
     const sort = document.getElementById('sort')?.value;
     if (sort === 'price-asc') list.sort((a,b) => (a.discount||a.price) - (b.discount||b.price));
     else if (sort === 'price-desc') list.sort((a,b) => (b.discount||b.price) - (a.discount||a.price));
@@ -293,18 +296,28 @@ function applySearchFilter() {
     displayProducts(container, list);
 }
 
-// === LIVE FILTERS ON PRODUCTS PAGE ===
+// === LIVE FILTERS ON PRODUCTS PAGE (BACKSPACE WORKS) ===
 if (document.getElementById('search') || document.getElementById('type-filter') || document.getElementById('sort')) {
     ['search', 'type-filter', 'sort'].forEach(id => {
-        document.getElementById(id)?.addEventListener('input', applySearchFilter);
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('input', () => {
+                // UPDATE URL WITHOUT REDIRECT
+                const params = new URLSearchParams();
+                const searchVal = document.getElementById('search')?.value.trim();
+                if (searchVal) params.set('search', searchVal);
+                const newUrl = `${window.location.pathname}${params.toString() ? '?' + params.toString() : ''}`;
+                window.history.replaceState({}, '', newUrl);
+                applyProductPageFilters();
+            });
+        }
     });
 }
 
-// === HERO SEARCH (ENTER KEY) ===
+// === HERO SEARCH FORM (ENTER KEY) ===
 document.getElementById('hero-search-form')?.addEventListener('submit', (e) => {
     e.preventDefault();
-    const input = document.getElementById('home-search');
-    const query = input?.value.trim();
+    const query = document.getElementById('home-search')?.value.trim();
     if (query) {
         window.location.href = `/products.html?search=${encodeURIComponent(query)}`;
     } else {
@@ -312,7 +325,7 @@ document.getElementById('hero-search-form')?.addEventListener('submit', (e) => {
     }
 });
 
-// === LIVE SEARCH FROM HOME (TYPING) ===
+// === LIVE SEARCH FROM HOME (TYPING → REDIRECT) ===
 document.getElementById('home-search')?.addEventListener('input', function() {
     const query = this.value.trim();
     clearTimeout(searchTimer);
@@ -323,10 +336,8 @@ document.getElementById('home-search')?.addEventListener('input', function() {
     }
 });
 
-// === ADD TO CART, CART, ORDER, ADMIN, TOASTS, etc. (UNCHANGED) ===
-// [All remaining code from your original file – unchanged]
-// ... (addToCart, displayCart, calculateTotal, order, admin, toast, init)
-
+// === REMAINING CODE (CART, ADMIN, TOASTS, etc.) ===
+// [All remaining code from previous version – unchanged]
 
 // === ADD TO CART ===
 function addToCart(id) {
