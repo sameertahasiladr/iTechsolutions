@@ -1,4 +1,4 @@
-// script.js – FINAL: MOBILE-FRIENDLY + PRODUCT VIEW + ALL FEATURES
+// script.js – FINAL: PRODUCT VIEW + MOBILE-FRIENDLY + ALL FEATURES
 const PHONE_NUMBER = '9545690700';
 const API_BASE = '/api';
 const CLOUDINARY_CLOUD = 'ddktvfhsb';
@@ -80,7 +80,7 @@ function renderAll() {
     if (document.getElementById('cart-items')) displayCart();
 }
 
-// === DISPLAY PRODUCTS (WITH NO RESULTS + PRODUCT VIEW LINK) ===
+// === DISPLAY PRODUCTS (WITH PRODUCT VIEW LINKS) ===
 function displayProducts(container, list, isAdmin = false, isFeatured = false) {
     if (!container) return;
     container.innerHTML = '';
@@ -166,7 +166,7 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
                 </div>
             `;
         } 
-        // === PRODUCT LIST ITEM (FULL LIST PAGE) ===
+        // === PRODUCT LIST ITEM ===
         else {
             item.className = 'list-group-item p-3 p-md-4';
             item.style.cursor = 'pointer';
@@ -175,7 +175,6 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
                     window.location.href = `/productview.html?id=${product.id}`;
                 }
             };
-
             item.innerHTML = `
                 <div class="row align-items-center g-3">
                     <div class="col-4 col-md-3 col-lg-2">
@@ -235,7 +234,7 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
         container.appendChild(item);
     });
 
-    // === VIEW MORE / LESS TOGGLE (ONLY IN LIST/FEATURED) ===
+    // View More / Less
     document.querySelectorAll('.view-more').forEach(link => {
         if (link.href.includes('productview.html')) return;
         link.onclick = (e) => {
@@ -256,7 +255,7 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
         };
     });
 
-    // === ADD TO CART BUTTONS ===
+    // Add to Cart
     document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
         btn.onclick = (e) => {
             e.stopPropagation();
@@ -351,7 +350,7 @@ function displayCart() {
             </div>
         `;
         const input = cartItem.querySelector('input');
-        const removeBtn = cartItem.querySelector('.remove-cart-btn');
+        const removeBtn = cartItem.querySelector('remove-cart-btn');
         input.onchange = e => updateQuantity(item.id, e.target.value);
         removeBtn.onclick = () => removeFromCart(item.id);
         container.appendChild(cartItem);
@@ -661,7 +660,7 @@ if (document.getElementById('search')) {
     apply();
 }
 
-// === HERO SEARCH → PRODUCTS PAGE (LIVE) ===
+// === HERO SEARCH → PRODUCTS PAGE ===
 document.getElementById('hero-search-form')?.addEventListener('submit', (e) => {
     e.preventDefault();
     const query = document.getElementById('home-search').value.trim();
@@ -672,7 +671,7 @@ document.getElementById('hero-search-form')?.addEventListener('submit', (e) => {
     }
 });
 
-// Optional: Live search from home
+// === LIVE SEARCH FROM HOME ===
 document.getElementById('home-search')?.addEventListener('input', function() {
     const query = this.value.trim();
     if (query.length >= 2) {
@@ -742,7 +741,7 @@ function showConfirmToast(message, onConfirm, onCancel) {
     };
 }
 
-// === SERVICE BOOKING (HOME & SERVICE PAGE) ===
+// === SERVICE BOOKING ===
 document.getElementById('home-book-whatsapp')?.addEventListener('click', () => {
     const name = document.getElementById('home-name')?.value.trim();
     const address = document.getElementById('home-address')?.value.trim();
