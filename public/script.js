@@ -455,8 +455,8 @@ function calculateTotal(subtotal) {
 
     if (!chargeEl || !totalEl || !noteEl) return;
 
-    let shipping = 0;
-    let note = '(pickup from dealer)';
+    let shipping = 200;
+    let note = '(Rest of India)';
 
     if (state === 'Goa') {
         goa?.classList.replace('d-none', 'd-block');
