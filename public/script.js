@@ -1,4 +1,4 @@
-// script.js – FINAL: ALL ERRORS FIXED + SEARCH FULLY WORKING
+// script.js – FINAL: HOME SEARCH FULLY FIXED + ALL FEATURES WORKING
 const PHONE_NUMBER = '9545690700';
 const API_BASE = '/api';
 const CLOUDINARY_CLOUD = 'ddktvfhsb';
@@ -7,6 +7,7 @@ const CLOUDINARY_PRESET = 'itechsolution';
 let products = [];
 let cart = JSON.parse(localStorage.getItem('cart') || '[]');
 let isAdminAuthenticated = false;
+let searchTimer; // GLOBAL TIMER FOR LIVE SEARCH
 
 // === ADMIN AUTH ===
 async function loginAdmin(username, password) {
@@ -642,7 +643,7 @@ if (document.getElementById('search')) {
     apply();
 }
 
-// === HERO SEARCH (FIXED) ===
+// === HERO SEARCH (PRESS ENTER) ===
 document.getElementById('hero-search-form')?.addEventListener('submit', (e) => {
     e.preventDefault();
     const query = document.getElementById('home-search')?.value.trim();
@@ -654,7 +655,6 @@ document.getElementById('hero-search-form')?.addEventListener('submit', (e) => {
 });
 
 // === LIVE SEARCH FROM HOME (FIXED & DEBOUNCED) ===
-let searchTimer;
 document.getElementById('home-search')?.addEventListener('input', function() {
     const query = this.value.trim();
     clearTimeout(searchTimer);
