@@ -18,12 +18,12 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link active" href="/index.html"><i class="bi bi-house me-2"></i>Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/about.html"><i class="bi bi-info-circle me-2"></i>About Us</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/products.html"><i class="bi bi-laptop me-2"></i>Products</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/cart.html"><i class="bi bi-cart me-2"></i>Cart</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/service.html"><i class="bi bi-tools me-2"></i>Service</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/admin.html"><i class="bi bi-gear me-2"></i>Admin</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/about.html">About Us</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/products.html">Products</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/cart.html">Cart</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/service.html">Service</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/admin.html">Admin</a></li>
                 </ul>
             </div>
         </div>
@@ -31,7 +31,7 @@
 
     <main class="p-3 p-md-4">
 
-        <!-- HERO – FULLY RESPONSIVE -->
+        <!-- HERO – SEARCH WITH BUTTON -->
         <section class="hero position-relative text-center text-white overflow-hidden">
             <div class="hero-bg position-absolute top-0 start-0 w-100 h-100" 
                  style="background: url('https://cdn.thewirecutter.com/wp-content/media/2024/10/BEST-BLUETOOTHT-AUDIO-RECEIVERS-2048px-4664-2x1-1.jpg?width=2048&quality=75&crop=2:1&auto=webp') center/cover no-repeat; filter: brightness(0.6); z-index: 1;">
@@ -45,10 +45,28 @@
                         <p class="hero-subtitle mb-3 text-shadow">
                             Discover premium new and refurbished <strong>laptops, mobiles, printers, and PCs</strong> at unbeatable prices.
                         </p>
+
+                        <!-- SEARCH FORM WITH BUTTON -->
                         <div class="hero-search mb-3">
-                            <input type="text" id="home-search" placeholder="Search for laptops, mobiles, printers..." 
-                                   class="form-control form-control-lg rounded-pill shadow-sm bg-white text-dark px-4">
+                            <form id="hero-search-form" class="d-flex gap-2">
+                                <input 
+                                    type="text" 
+                                    id="home-search" 
+                                    placeholder="Search for laptops, mobiles, printers..." 
+                                    class="form-control form-control-lg rounded-pill shadow-sm bg-white text-dark px-4 flex-grow-1"
+                                    required
+                                >
+                                <button 
+                                    type="submit" 
+                                    class="btn btn-primary btn-lg rounded-pill d-flex align-items-center justify-content-center"
+                                    style="width: 50px; height: 50px;"
+                                >
+                                    Search
+                                </button>
+                            </form>
                         </div>
+
+                        <!-- Buttons -->
                         <div class="hero-buttons d-flex flex-column flex-sm-row gap-2 justify-content-center">
                             <a href="/products.html" class="btn btn-light btn-hero px-4 shadow-sm text-dark fw-semibold">
                                 Shop Now
@@ -117,9 +135,7 @@
         <!-- SERVICE BOOKING -->
         <section class="service-booking py-4 py-md-5" id="service-booking">
             <div class="container-xl">
-                <h2 class="h2 fw-bold text-center mb-4">
-                    <i class="bi bi-tools text-primary me-2"></i>Book a Service
-                </h2>
+                <h2 class="h2 fw-bold text-center mb-4">Book a Service</h2>
                 <p class="text-center text-muted mb-5 small">Laptop • Mobile • Printer • Desktop • CCTV • Software Issues</p>
 
                 <div class="row justify-content-center">
@@ -158,7 +174,7 @@
                                         </div>
                                         <div class="col-12">
                                             <button type="button" id="home-book-whatsapp" class="btn btn-success w-100 shadow-sm">
-                                                <i class="bi bi-whatsapp me-2"></i>Send via WhatsApp
+                                                Send via WhatsApp
                                             </button>
                                         </div>
                                     </div>
@@ -176,8 +192,8 @@
                 <h2 class="h2 fw-bold mb-4">Get in Touch</h2>
                 <p class="lead text-muted mb-4">Contact us via call or WhatsApp.</p>
                 <div class="d-flex flex-wrap gap-2 justify-content-center">
-                    <a href="tel:9545690700" class="btn btn-outline-primary btn-sm"><i class="bi bi-telephone me-2"></i>Call Us</a>
-                    <a href="https://wa.me/9545690700" target="_blank" class="btn btn-outline-primary btn-sm"><i class="bi bi-whatsapp me-2"></i>WhatsApp</a>
+                    <a href="tel:9545690700" class="btn btn-outline-primary btn-sm">Call Us</a>
+                    <a href="https://wa.me/9545690700" target="_blank" class="btn btn-outline-primary btn-sm">WhatsApp</a>
                 </div>
             </div>
         </section>
@@ -190,21 +206,5 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/script.js"></script>
-
-    <script>
-        (() => {
-            'use strict';
-            const form = document.getElementById('home-service-form');
-            form.addEventListener('submit', e => e.preventDefault());
-
-            document.getElementById('home-book-whatsapp')?.addEventListener('click', () => {
-                if (form.checkValidity()) {
-                    document.dispatchEvent(new CustomEvent('home-service-book'));
-                } else {
-                    form.classList.add('was-validated');
-                }
-            });
-        })();
-    </script>
 </body>
 </html>

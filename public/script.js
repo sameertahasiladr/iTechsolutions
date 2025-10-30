@@ -1,4 +1,4 @@
-// script.js – FINAL: MOBILE-FRIENDLY FEATURED PRODUCTS + ALL FIXES
+// script.js – FINAL: MOBILE-FRIENDLY + NO RESULTS + LIVE SEARCH + ALL FEATURES
 const PHONE_NUMBER = '9545690700';
 const API_BASE = '/api';
 const CLOUDINARY_CLOUD = 'ddktvfhsb';
@@ -80,14 +80,41 @@ function renderAll() {
     if (document.getElementById('cart-items')) displayCart();
 }
 
-// === DISPLAY PRODUCTS (RESPONSIVE) ===
+// === DISPLAY PRODUCTS (WITH NO RESULTS + SUGGESTIONS) ===
 function displayProducts(container, list, isAdmin = false, isFeatured = false) {
     if (!container) return;
     container.innerHTML = '';
     let displayList = isFeatured ? list.slice(0, 3) : list;
 
     if (displayList.length === 0) {
-        container.innerHTML = '<div class="text-center text-muted py-4">No products available.</div>';
+        const searchTerm = document.getElementById('search')?.value.trim() || '';
+        const typeFilter = document.getElementById('type-filter')?.value || '';
+        let message = 'No products found.';
+
+        if (searchTerm || typeFilter) {
+            const suggestions = {
+                laptop: ['Dell', 'HP', 'Lenovo', 'Asus'],
+                mobile: ['iPhone', 'Samsung', 'OnePlus', 'Xiaomi'],
+                printer: ['HP', 'Canon', 'Epson'],
+                accessory: ['Charger', 'Case', 'Earphones']
+            };
+
+            const term = searchTerm.toLowerCase();
+            const type = typeFilter || (term.includes('laptop') ? 'laptop' : term.includes('mobile') ? 'mobile' : term.includes('printer') ? 'printer' : 'accessory');
+            const suggestionsList = suggestions[type] || suggestions.laptop;
+
+            const randomSuggestions = suggestionsList.sort(() => 0.5 - Math.random()).slice(0, 3);
+            message = `No ${typeFilter || 'results'} found for "<strong>${searchTerm || 'your search'}</strong>".<br>
+                       Try: <strong>${randomSuggestions.join('</strong>, <strong>')}</strong>`;
+        }
+
+        container.innerHTML = `
+            <div class="text-center py-5">
+                <i class="bi bi-search display-1 text-muted mb-3"></i>
+                <p class="lead text-muted">${message}</p>
+                <a href="/products.html" class="btn btn-outline-primary btn-sm">Clear Filters</a>
+            </div>
+        `;
         return;
     }
 
@@ -96,7 +123,6 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
         const images = product.images || [];
         const inCart = cart.find(i => i.id === product.id);
         const quantity = inCart ? inCart.quantity : 0;
-
         const shortDesc = product.description.length > 80 
             ? product.description.substring(0, 80) + '...' 
             : product.description;
@@ -109,11 +135,7 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
                         ${images.length > 0 ? `
                             <img src="${images[0]}" alt="${product.name}" class="w-100 h-100 object-fit-contain p-2">
                             ${images.length > 1 ? `<span class="position-absolute top-0 end-0 bg-primary text-white small px-2 py-1 rounded-start">+${images.length - 1}</span>` : ''}
-                        ` : `
-                            <div class="d-flex align-items-center justify-content-center h-100 text-muted">
-                                <i class="bi bi-image fs-1"></i>
-                            </div>
-                        `}
+                        ` : `<div class="d-flex align-items-center justify-content-center h-100 text-muted"><i class="bi bi-image fs-1"></i></div>`}
                     </div>
                     <div class="card-body d-flex flex-column p-3">
                         <h5 class="card-title mb-1" style="font-size:0.85rem;font-weight:600;line-height:1.3;-webkit-line-clamp:2;-webkit-box-orient:vertical;display:-webkit-box;overflow:hidden;">
@@ -368,12 +390,9 @@ function calculateTotal(subtotal) {
 
 // === ORDER VIA WHATSAPP ===
 document.getElementById('order-whatsapp')?.addEventListener('click', () => {
-    const nameEl = document.getElementById('customer-name');
-    const addrEl = document.getElementById('address');
-    const stateEl = document.getElementById('state');
-    const name = nameEl?.value.trim();
-    const addr = addrEl?.value.trim();
-    const state = stateEl?.value;
+    const name = document.getElementById('customer-name')?.value.trim();
+    const addr = document.getElementById('address')?.value.trim();
+    const state = document.getElementById('state')?.value;
     const pickup = state === 'Goa' && document.getElementById('pickup')?.checked;
     const total = document.getElementById('total')?.textContent;
 
@@ -396,7 +415,6 @@ document.getElementById('order-whatsapp')?.addEventListener('click', () => {
 
 *Customer Details*
 Name: ${name}
-Phone: [Auto-filled on WhatsApp]
 Address: ${addr}, ${state}
 Delivery: ${pickup ? 'Pickup (Free)' : `Delivery - ${shippingNote}`}
 
@@ -407,8 +425,6 @@ ${items}
 Subtotal: ${total - shipping} Rs
 Shipping: ${shipping} Rs ${shippingNote}
 *Total: ${total} Rs*
-
-*Note:* Please confirm stock & delivery within 24 hours.
 `.trim();
 
     const encoded = encodeURIComponent(message);
@@ -417,12 +433,9 @@ Shipping: ${shipping} Rs ${shippingNote}
 
 // === ORDER VIA CALL ===
 document.getElementById('order-call')?.addEventListener('click', () => {
-    const nameEl = document.getElementById('customer-name');
-    const addrEl = document.getElementById('address');
-    const stateEl = document.getElementById('state');
-    const name = nameEl?.value.trim();
-    const addr = addrEl?.value.trim();
-    const state = stateEl?.value;
+    const name = document.getElementById('customer-name')?.value.trim();
+    const addr = document.getElementById('address')?.value.trim();
+    const state = document.getElementById('state')?.value;
     const pickup = state === 'Goa' && document.getElementById('pickup')?.checked;
     const total = document.getElementById('total')?.textContent;
 
@@ -595,10 +608,17 @@ async function deleteProduct(id) {
     });
 }
 
-// === FILTERS & SEARCH ===
+// === FILTERS & SEARCH (LIVE + URL SUPPORT) ===
 if (document.getElementById('search')) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlSearch = urlParams.get('search') || '';
+    const searchInput = document.getElementById('search');
+    searchInput.value = urlSearch;
+
     const apply = () => {
-        let list = products.filter(p => p.name.toLowerCase().includes(document.getElementById('search').value.toLowerCase()));
+        let list = products.filter(p => 
+            p.name.toLowerCase().includes(searchInput.value.toLowerCase())
+        );
         if (document.getElementById('type-filter').value) {
             list = list.filter(p => p.type === document.getElementById('type-filter').value);
         }
@@ -609,17 +629,35 @@ if (document.getElementById('search')) {
         else if (sort === 'name-desc') list.sort((a,b) => b.name.localeCompare(b.name));
         displayProducts(document.getElementById('product-list'), list);
     };
+
     ['search', 'type-filter', 'sort'].forEach(id => {
         document.getElementById(id)?.addEventListener('input', apply);
     });
+
     apply();
 }
 
-if (document.getElementById('home-search')) {
-    document.getElementById('home-search').addEventListener('input', e => {
-        window.location.href = `/products.html?search=${encodeURIComponent(e.target.value)}`;
-    });
-}
+// === HERO SEARCH → PRODUCTS PAGE (LIVE) ===
+document.getElementById('hero-search-form')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const query = document.getElementById('home-search').value.trim();
+    if (query) {
+        window.location.href = `/products.html?search=${encodeURIComponent(query)}`;
+    } else {
+        showToast('Please type something to search.', 'error');
+    }
+});
+
+// Optional: Live search from home (type → auto-redirect)
+document.getElementById('home-search')?.addEventListener('input', function() {
+    const query = this.value.trim();
+    if (query.length >= 2) {
+        clearTimeout(this._timer);
+        this._timer = setTimeout(() => {
+            window.location.href = `/products.html?search=${encodeURIComponent(query)}`;
+        }, 800);
+    }
+});
 
 // === TOASTS ===
 function createToastContainer() {
@@ -627,6 +665,10 @@ function createToastContainer() {
     if (!toastContainer) {
         toastContainer = document.createElement('div');
         toastContainer.id = 'toast-container';
+        toastContainer.style.cssText = `
+            position: fixed; top: 1rem; right: 1rem; z-index: 9999;
+            display: flex; flex-direction: column; gap: 0.5rem;
+        `;
         document.body.appendChild(toastContainer);
     }
     return toastContainer;
@@ -635,21 +677,24 @@ function createToastContainer() {
 function showToast(message, type = 'success') {
     const toastContainer = createToastContainer();
     const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    toast.textContent = message;
+    toast.className = `toast align-items-center text-white bg-${type === 'error' ? 'danger' : 'success'} border-0 shadow-sm`;
+    toast.role = 'alert';
+    toast.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body">${message}</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    `;
     toastContainer.appendChild(toast);
-    setTimeout(() => toast.classList.add('show'), 100);
-    setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => toast.remove(), 400);
-    }, 3000);
+    const bsToast = new bootstrap.Toast(toast, { delay: 3000 });
+    bsToast.show();
 }
 
 function showConfirmToast(message, onConfirm, onCancel) {
     const toastContainer = createToastContainer();
     const toast = document.createElement('div');
-    toast.className = 'toast confirm shadow-lg border-0';
-    toast.style.cssText = 'min-width: 280px; max-width: 90vw;';
+    toast.className = 'toast align-items-center border-0 shadow-lg';
+    toast.style.minWidth = '280px';
     toast.innerHTML = `
         <div class="toast-body p-3">
             <p class="mb-3 fw-semibold">${message}</p>
@@ -660,76 +705,21 @@ function showConfirmToast(message, onConfirm, onCancel) {
         </div>
     `;
     toastContainer.appendChild(toast);
-    setTimeout(() => toast.classList.add('show'), 100);
+    const bsToast = new bootstrap.Toast(toast);
+    bsToast.show();
 
     toast.querySelector('.confirm-yes').onclick = () => {
-        toast.classList.remove('show');
+        bsToast.hide();
         setTimeout(() => { toast.remove(); onConfirm(); }, 400);
     };
     toast.querySelector('.confirm-no').onclick = () => {
-        toast.classList.remove('show');
+        bsToast.hide();
         setTimeout(() => { toast.remove(); if (onCancel) onCancel(); }, 400);
     };
 }
 
-// === INIT ===
-document.addEventListener('DOMContentLoaded', () => {
-    if (window.location.pathname.includes('admin.html')) {
-        checkAdminAuth();
-    } else {
-        loadProducts();
-        setTimeout(() => {
-            if (document.getElementById('cart-items')) displayCart();
-        }, 800);
-    }
-});
-
-// === SERVICE BOOKING ===
-document.addEventListener('service-book-whatsapp', () => {
-    const name = document.getElementById('service-name')?.value.trim();
-    const address = document.getElementById('service-address')?.value.trim();
-    const product = document.getElementById('service-product')?.value;
-    const model = document.getElementById('service-model')?.value.trim();
-    const issue = document.getElementById('service-issue')?.value.trim();
-
-    if (!name || !address || !product || !issue) {
-        showToast('Please fill all required fields.', 'error');
-        return;
-    }
-
-    const modelLine = model ? `\nModel: ${model}` : '';
-
-    const message = `
-*SERVICE REQUEST - iTech Solutions*
-
-*Customer Details*
-Name: ${name}
-Address: ${address}${modelLine}
-Device: ${product}
-
-*Problem Description*
-${issue}
-
-*Service Info*
-• Free Diagnosis
-• Fast Repair (Same Day Possible)
-• 30 Days Warranty
-• Doorstep Service (Goa)
-
-*Note:* Technician will call you within 1 hour.
-`.trim();
-
-    const encoded = encodeURIComponent(message);
-    window.open(`https://wa.me/${PHONE_NUMBER}?text=${encoded}`, '_blank');
-    showToast('Request sent successfully!', 'success');
-    
-    setTimeout(() => {
-        document.getElementById('service-form').reset();
-        document.getElementById('service-form').classList.remove('was-validated');
-    }, 1000);
-});
-
-document.addEventListener('home-service-book', () => {
+// === SERVICE BOOKING (HOME & SERVICE PAGE) ===
+document.getElementById('home-book-whatsapp')?.addEventListener('click', () => {
     const name = document.getElementById('home-name')?.value.trim();
     const address = document.getElementById('home-address')?.value.trim();
     const product = document.getElementById('home-product')?.value;
@@ -771,4 +761,16 @@ ${issue}
         document.getElementById('home-service-form').reset();
         document.getElementById('home-service-form').classList.remove('was-validated');
     }, 1000);
+});
+
+// === INIT ===
+document.addEventListener('DOMContentLoaded', () => {
+    if (window.location.pathname.includes('admin.html')) {
+        checkAdminAuth();
+    } else {
+        loadProducts();
+        setTimeout(() => {
+            if (document.getElementById('cart-items')) displayCart();
+        }, 800);
+    }
 });
