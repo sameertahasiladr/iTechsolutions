@@ -81,8 +81,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // === PRODUCT VIEW – LOAD PRODUCTS + DISPLAY ===
+        // === PRODUCT VIEW – FULLY WORKING ===
         let products = [];
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]'); // FIXED: Load cart
 
         async function loadProducts() {
             try {
@@ -95,7 +96,7 @@
                 document.getElementById('product-detail').innerHTML = `
                     <div class="text-center py-5">
                         <i class="bi bi-exclamation-triangle display-1 text-warning mb-3"></i>
-                        <p class="lead">Product not found.</p>
+                        <p class="lead">Failed to load product. Please try again.</p>
                         <a href="/products.html" class="btn btn-outline-primary">Back to Products</a>
                     </div>
                 `;
@@ -109,7 +110,7 @@
                 document.getElementById('product-detail').innerHTML = `
                     <div class="text-center py-4">
                         <i class="bi bi-exclamation-triangle display-1 text-warning mb-3"></i>
-                        <p class="lead">Product not found.</p>
+                        <p class="lead">Invalid product ID.</p>
                         <a href="/products.html" class="btn btn-outline-primary">Back to Products</a>
                     </div>
                 `;
@@ -121,7 +122,7 @@
                 document.getElementById('product-detail').innerHTML = `
                     <div class="text-center py-4">
                         <i class="bi bi-exclamation-triangle display-1 text-warning mb-3"></i>
-                        <p class="lead">Product not available.</p>
+                        <p class="lead">Product not found.</p>
                         <a href="/products.html" class="btn btn-outline-primary">Back to Products</a>
                     </div>
                 `;
@@ -153,7 +154,7 @@
                 carouselInner.appendChild(item);
             });
 
-            // Cart Logic
+            // Cart Button Logic
             const cartBtn = document.getElementById('add-to-cart-btn');
             const goBtn = document.getElementById('go-to-cart-btn');
             const inCart = cart.find(i => i.id === id);
@@ -174,7 +175,20 @@
             };
         }
 
-        // Load products on page load
+        // === ADD TO CART FUNCTION (LOCAL) ===
+        function addToCart(id) {
+            const p = products.find(x => x.id === id);
+            if (!p) return alert('Product not found.');
+
+            const item = cart.find(i => i.id === id);
+            if (item) item.quantity++;
+            else cart.push({ id, quantity: 1 });
+
+            localStorage.setItem('cart', JSON.stringify(cart));
+            alert(`${p.name} added to cart!`);
+        }
+
+        // === LOAD ON START ===
         loadProducts();
     </script>
 </body>
