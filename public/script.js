@@ -1,4 +1,4 @@
-// script.js – FINAL: MOBILE-FRIENDLY + NO RESULTS + LIVE SEARCH + ALL FEATURES
+// script.js – FINAL: MOBILE-FRIENDLY + PRODUCT VIEW + ALL FEATURES
 const PHONE_NUMBER = '9545690700';
 const API_BASE = '/api';
 const CLOUDINARY_CLOUD = 'ddktvfhsb';
@@ -80,7 +80,7 @@ function renderAll() {
     if (document.getElementById('cart-items')) displayCart();
 }
 
-// === DISPLAY PRODUCTS (WITH NO RESULTS + SUGGESTIONS) ===
+// === DISPLAY PRODUCTS (WITH NO RESULTS + PRODUCT VIEW LINK) ===
 function displayProducts(container, list, isAdmin = false, isFeatured = false) {
     if (!container) return;
     container.innerHTML = '';
@@ -127,10 +127,11 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
             ? product.description.substring(0, 80) + '...' 
             : product.description;
 
+        // === FEATURED PRODUCT CARD ===
         if (isFeatured) {
             item.className = 'col-12 col-sm-6 col-md-4';
             item.innerHTML = `
-                <div class="featured-card card h-100">
+                <div class="featured-card card h-100" style="cursor: pointer;" onclick="window.location.href='/productview.html?id=${product.id}'">
                     <div class="product-image-wrapper position-relative bg-white rounded overflow-hidden" style="height:140px;">
                         ${images.length > 0 ? `
                             <img src="${images[0]}" alt="${product.name}" class="w-100 h-100 object-fit-contain p-2">
@@ -152,10 +153,10 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
                             <span class="short-desc">${shortDesc}</span>
                             ${product.description.length > 80 ? `
                                 <span class="full-desc d-none">${product.description}</span>
-                                <a href="#" class="text-primary view-more" style="font-size:0.65rem;padding:0;">View More</a>
+                                <a href="/productview.html?id=${product.id}" class="text-primary view-more" style="font-size:0.65rem;padding:0;" onclick="event.stopPropagation();">View More</a>
                             ` : ''}
                         </p>
-                        <div class="mt-auto d-grid gap-2 d-md-flex">
+                        <div class="mt-auto d-grid gap-2 d-md-flex" onclick="event.stopPropagation();">
                             <button class="btn btn-outline-primary btn-sm add-to-cart-btn flex-fill" data-id="${product.id}" style="font-size:0.7rem;padding:0.35rem 0.6rem;">
                                 ${quantity > 0 ? `Added (${quantity})` : 'Add to Cart'}
                             </button>
@@ -164,8 +165,17 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
                     </div>
                 </div>
             `;
-        } else {
+        } 
+        // === PRODUCT LIST ITEM (FULL LIST PAGE) ===
+        else {
             item.className = 'list-group-item p-3 p-md-4';
+            item.style.cursor = 'pointer';
+            item.onclick = (e) => {
+                if (!e.target.closest('button, a')) {
+                    window.location.href = `/productview.html?id=${product.id}`;
+                }
+            };
+
             item.innerHTML = `
                 <div class="row align-items-center g-3">
                     <div class="col-4 col-md-3 col-lg-2">
@@ -180,10 +190,10 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
                                 </div>`}
                             </div>
                             ${images.length > 1 ? `
-                                <button class="carousel-control-prev" type="button" data-bs-target="#carousel-${product.id}" data-bs-slide="prev">
+                                <button class="carousel-control-prev" type="button" data-bs-target="#carousel-${product.id}" data-bs-slide="prev" onclick="event.stopPropagation();">
                                     <span class="carousel-control-prev-icon"></span>
                                 </button>
-                                <button class="carousel-control-next" type="button" data-bs-target="#carousel-${product.id}" data-bs-slide="next">
+                                <button class="carousel-control-next" type="button" data-bs-target="#carousel-${product.id}" data-bs-slide="next" onclick="event.stopPropagation();">
                                     <span class="carousel-control-next-icon"></span>
                                 </button>
                             ` : ''}
@@ -203,36 +213,34 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
                                 <span class="short-desc">${shortDesc}</span>
                                 ${product.description.length > 80 ? `
                                     <span class="full-desc d-none">${product.description}</span>
-                                    <a href="#" class="text-primary view-more fs-7">View More</a>
+                                    <a href="/productview.html?id=${product.id}" class="text-primary view-more fs-7" onclick="event.stopPropagation();">View More</a>
                                 ` : ''}
                             </p>
-                            <div class="mt-auto d-flex gap-2 flex-wrap">
+                            <div class="mt-auto d-flex gap-2 flex-wrap" onclick="event.stopPropagation();">
                                 <button class="btn btn-outline-primary btn-sm add-to-cart-btn" data-id="${product.id}">
                                     ${quantity > 0 ? `Added (${quantity})` : 'Add'}
                                 </button>
                                 ${quantity > 0 ? `<a href="/cart.html" class="btn btn-primary btn-sm">Go to Cart</a>` : ''}
                                 ${isAdmin ? `
-                                    <button class="btn btn-outline-primary btn-sm edit-btn">Edit</button>
-                                    <button class="btn btn-outline-danger btn-sm delete-btn">Delete</button>
+                                    <button class="btn btn-outline-primary btn-sm edit-btn" onclick="event.stopPropagation(); editProduct(${product.id})">Edit</button>
+                                    <button class="btn btn-outline-danger btn-sm delete-btn" onclick="event.stopPropagation(); deleteProduct(${product.id})">Delete</button>
                                 ` : ''}
                             </div>
                         </div>
                     </div>
                 </div>
             `;
-
-            if (isAdmin) {
-                item.querySelector('.edit-btn').onclick = () => editProduct(product.id);
-                item.querySelector('.delete-btn').onclick = () => deleteProduct(product.id);
-            }
         }
+
         container.appendChild(item);
     });
 
-    // View More / Less
+    // === VIEW MORE / LESS TOGGLE (ONLY IN LIST/FEATURED) ===
     document.querySelectorAll('.view-more').forEach(link => {
-        link.onclick = e => {
+        if (link.href.includes('productview.html')) return;
+        link.onclick = (e) => {
             e.preventDefault();
+            e.stopPropagation();
             const parent = link.parentElement;
             const short = parent.querySelector('.short-desc');
             const full = parent.querySelector('.full-desc');
@@ -248,9 +256,12 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
         };
     });
 
-    // Add to Cart
+    // === ADD TO CART BUTTONS ===
     document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
-        btn.onclick = () => addToCart(parseInt(btn.dataset.id));
+        btn.onclick = (e) => {
+            e.stopPropagation();
+            addToCart(parseInt(btn.dataset.id));
+        };
     });
 }
 
@@ -281,6 +292,19 @@ function addToCart(id) {
     });
 
     if (document.getElementById('cart-items')) displayCart();
+
+    // Update product view page if open
+    const viewButtons = document.querySelectorAll('#add-to-cart-btn');
+    viewButtons.forEach(btn => {
+        const viewId = new URLSearchParams(window.location.search).get('id');
+        if (viewId && parseInt(viewId) === id) {
+            const qty = cart.find(i => i.id === id).quantity;
+            btn.textContent = `Added (${qty})`;
+            btn.classList.replace('btn-outline-primary', 'btn-success');
+            const goBtn = document.getElementById('go-to-cart-btn');
+            if (goBtn) goBtn.classList.remove('d-none');
+        }
+    });
 }
 
 // === CART DISPLAY + AUTO UPDATE ===
@@ -648,7 +672,7 @@ document.getElementById('hero-search-form')?.addEventListener('submit', (e) => {
     }
 });
 
-// Optional: Live search from home (type → auto-redirect)
+// Optional: Live search from home
 document.getElementById('home-search')?.addEventListener('input', function() {
     const query = this.value.trim();
     if (query.length >= 2) {
