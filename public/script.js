@@ -325,16 +325,16 @@ document.getElementById('hero-search-form')?.addEventListener('submit', (e) => {
     }
 });
 
-// === LIVE SEARCH FROM HOME (TYPING → REDIRECT) ===
-document.getElementById('home-search')?.addEventListener('input', function() {
-    const query = this.value.trim();
-    clearTimeout(searchTimer);
-    if (query.length >= 2) {
-        searchTimer = setTimeout(() => {
-            window.location.href = `/products.html?search=${encodeURIComponent(query)}`;
-        }, 600);
-    }
-});
+// // === LIVE SEARCH FROM HOME (TYPING → REDIRECT) ===
+// document.getElementById('home-search')?.addEventListener('input', function() {
+//     const query = this.value.trim();
+//     clearTimeout(searchTimer);
+//     if (query.length >= 2) {
+//         searchTimer = setTimeout(() => {
+//             window.location.href = `/products.html?search=${encodeURIComponent(query)}`;
+//         }, 600);
+//     }
+// });
 
 // === REMAINING CODE (CART, ADMIN, TOASTS, etc.) ===
 // [All remaining code from previous version – unchanged]
