@@ -260,33 +260,36 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
     });
 }
 
-// === APPLY FILTERS ON PRODUCTS PAGE (NO REDIRECT) ===
+// === APPLY FILTERS ON PRODUCTS PAGE (FIXED) ===
 function applyProductPageFilters() {
     const container = document.getElementById('product-list');
     if (!container) return;
 
+    // Read from URL
     const urlParams = new URLSearchParams(window.location.search);
     const urlSearch = urlParams.get('search') || '';
     const searchInput = document.getElementById('search');
+
+    // Sync URL → Input
     if (searchInput && urlSearch) {
         searchInput.value = urlSearch;
     }
 
-    let list = products;
+    let list = [...products]; // Clone
 
-    // Apply search
-    const currentSearch = searchInput?.value.toLowerCase() || '';
+    // 1. SEARCH
+    const currentSearch = (searchInput?.value || '').trim().toLowerCase();
     if (currentSearch) {
         list = list.filter(p => p.name.toLowerCase().includes(currentSearch));
     }
 
-    // Apply type filter
+    // 2. TYPE FILTER
     const typeFilter = document.getElementById('type-filter')?.value;
     if (typeFilter) {
         list = list.filter(p => p.type === typeFilter);
     }
 
-    // Apply sort
+    // 3. SORT
     const sort = document.getElementById('sort')?.value;
     if (sort === 'price-asc') list.sort((a,b) => (a.discount||a.price) - (b.discount||b.price));
     else if (sort === 'price-desc') list.sort((a,b) => (b.discount||b.price) - (a.discount||a.price));
@@ -296,23 +299,22 @@ function applyProductPageFilters() {
     displayProducts(container, list);
 }
 
-// === LIVE FILTERS ON PRODUCTS PAGE (BACKSPACE WORKS) ===
-if (document.getElementById('search') || document.getElementById('type-filter') || document.getElementById('sort')) {
-    ['search', 'type-filter', 'sort'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.addEventListener('input', () => {
-                // UPDATE URL WITHOUT REDIRECT
-                const params = new URLSearchParams();
-                const searchVal = document.getElementById('search')?.value.trim();
-                if (searchVal) params.set('search', searchVal);
-                const newUrl = `${window.location.pathname}${params.toString() ? '?' + params.toString() : ''}`;
-                window.history.replaceState({}, '', newUrl);
-                applyProductPageFilters();
-            });
-        }
-    });
-}
+// === LIVE FILTERS ON PRODUCTS PAGE (REAL-TIME + BACKSPACE WORKS) ===
+document.querySelectorAll('#search, #type-filter, #sort').forEach(el => {
+    if (el) {
+        el.addEventListener('input', () => {
+            // Update URL (no reload)
+            const params = new URLSearchParams();
+            const searchVal = document.getElementById('search')?.value.trim();
+            if (searchVal) params.set('search', searchVal);
+
+            const newUrl = `${window.location.pathname}${params.toString() ? '?' + params.toString() : ''}`;
+            window.history.replaceState({}, '', newUrl);
+
+            applyProductPageFilters();
+        });
+    }
+});
 
 // === HERO SEARCH FORM (ENTER KEY) ===
 document.getElementById('hero-search-form')?.addEventListener('submit', (e) => {
@@ -325,19 +327,16 @@ document.getElementById('hero-search-form')?.addEventListener('submit', (e) => {
     }
 });
 
-// // === LIVE SEARCH FROM HOME (TYPING → REDIRECT) ===
-// document.getElementById('home-search')?.addEventListener('input', function() {
-//     const query = this.value.trim();
-//     clearTimeout(searchTimer);
-//     if (query.length >= 2) {
-//         searchTimer = setTimeout(() => {
-//             window.location.href = `/products.html?search=${encodeURIComponent(query)}`;
-//         }, 600);
-//     }
-// });
-
-// === REMAINING CODE (CART, ADMIN, TOASTS, etc.) ===
-// [All remaining code from previous version – unchanged]
+// === LIVE SEARCH FROM HOME (TYPING → REDIRECT) ===
+document.getElementById('home-search')?.addEventListener('input', function() {
+    const query = this.value.trim();
+    clearTimeout(searchTimer);
+    if (query.length >= 2) {
+        searchTimer = setTimeout(() => {
+            window.location.href = `/products.html?search=${encodeURIComponent(query)}`;
+        }, 600);
+    }
+});
 
 // === ADD TO CART ===
 function addToCart(id) {
@@ -455,7 +454,7 @@ function calculateTotal(subtotal) {
 
     if (!chargeEl || !totalEl || !noteEl) return;
 
-    let shipping = 200;
+    let shipping = 300;
     let note = '(Rest of India)';
 
     if (state === 'Goa') {
