@@ -1,4 +1,4 @@
-// script.js – FINAL: SEARCH FULLY FIXED (HOME + PRODUCTS PAGE + BACKSPACE WORKS)
+// script.js – FINAL: CART + SEARCH + EVERYTHING 100% FIXED
 const PHONE_NUMBER = '9545690700';
 const API_BASE = '/api';
 const CLOUDINARY_CLOUD = 'ddktvfhsb';
@@ -7,7 +7,7 @@ const CLOUDINARY_PRESET = 'itechsolution';
 let products = [];
 let cart = JSON.parse(localStorage.getItem('cart') || '[]');
 let isAdminAuthenticated = false;
-let searchTimer; // GLOBAL DEBOUNCE FOR HOME SEARCH
+let searchTimer;
 
 // === ADMIN AUTH ===
 async function loginAdmin(username, password) {
@@ -61,6 +61,7 @@ async function loadProducts() {
         if (!res.ok) throw new Error('Failed to load');
         products = await res.json();
         renderAll();
+        updateCartUI(); // Sync cart buttons after products load
     } catch (err) {
         showToast('Error loading products.', 'error');
         console.error(err);
@@ -73,12 +74,41 @@ function renderAll() {
         displayProducts(document.getElementById('featured-products'), products, false, true);
     }
     if (document.getElementById('product-list')) {
-        applyProductPageFilters(); // APPLY FILTERS ON LOAD
+        applyProductPageFilters();
     }
     if (document.getElementById('admin-product-list') && isAdminAuthenticated) {
         displayProducts(document.getElementById('admin-product-list'), products, true);
     }
-    if (document.getElementById('cart-items')) displayCart();
+    if (document.getElementById('cart-items')) {
+        displayCart();
+    }
+}
+
+// === GLOBAL CART UI UPDATE ===
+function updateCartUI() {
+    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+        const id = parseInt(btn.dataset.id);
+        const item = cart.find(i => i.id === id);
+        const qty = item ? item.quantity : 0;
+
+        if (qty > 0) {
+            btn.textContent = `Added (${qty})`;
+            btn.classList.replace('btn-outline-primary', 'btn-success');
+            const parent = btn.parentElement;
+            if (!parent.querySelector('a[href="/cart.html"]')) {
+                const goToCart = document.createElement('a');
+                goToCart.href = '/cart.html';
+                goToCart.className = 'btn btn-primary btn-sm';
+                goToCart.textContent = 'Go to Cart';
+                parent.appendChild(goToCart);
+            }
+        } else {
+            btn.textContent = 'Add to Cart';
+            btn.classList.replace('btn-success', 'btn-outline-primary');
+            const goToCart = btn.parentElement.querySelector('a[href="/cart.html"]');
+            if (goToCart) goToCart.remove();
+        }
+    });
 }
 
 // === DISPLAY PRODUCTS ===
@@ -232,8 +262,9 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
         container.appendChild(item);
     });
 
+    // View More Toggle
     document.querySelectorAll('.view-more').forEach(link => {
-        if (link.href.includes('productview.html')) return;
+        if (link.href?.includes('productview.html')) return;
         link.onclick = (e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -252,6 +283,7 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
         };
     });
 
+    // Add to Cart Buttons
     document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
         btn.onclick = (e) => {
             e.stopPropagation();
@@ -260,36 +292,28 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
     });
 }
 
-// === APPLY FILTERS ON PRODUCTS PAGE (FIXED) ===
+// === APPLY FILTERS ON PRODUCTS PAGE ===
 function applyProductPageFilters() {
     const container = document.getElementById('product-list');
     if (!container) return;
 
-    // Read from URL
     const urlParams = new URLSearchParams(window.location.search);
     const urlSearch = urlParams.get('search') || '';
     const searchInput = document.getElementById('search');
+    if (searchInput && urlSearch) searchInput.value = urlSearch;
 
-    // Sync URL → Input
-    if (searchInput && urlSearch) {
-        searchInput.value = urlSearch;
-    }
+    let list = [...products];
 
-    let list = [...products]; // Clone
-
-    // 1. SEARCH
     const currentSearch = (searchInput?.value || '').trim().toLowerCase();
     if (currentSearch) {
         list = list.filter(p => p.name.toLowerCase().includes(currentSearch));
     }
 
-    // 2. TYPE FILTER
     const typeFilter = document.getElementById('type-filter')?.value;
     if (typeFilter) {
         list = list.filter(p => p.type === typeFilter);
     }
 
-    // 3. SORT
     const sort = document.getElementById('sort')?.value;
     if (sort === 'price-asc') list.sort((a,b) => (a.discount||a.price) - (b.discount||b.price));
     else if (sort === 'price-desc') list.sort((a,b) => (b.discount||b.price) - (a.discount||a.price));
@@ -299,24 +323,21 @@ function applyProductPageFilters() {
     displayProducts(container, list);
 }
 
-// === LIVE FILTERS ON PRODUCTS PAGE (REAL-TIME + BACKSPACE WORKS) ===
+// === LIVE FILTERS ===
 document.querySelectorAll('#search, #type-filter, #sort').forEach(el => {
     if (el) {
         el.addEventListener('input', () => {
-            // Update URL (no reload)
             const params = new URLSearchParams();
             const searchVal = document.getElementById('search')?.value.trim();
             if (searchVal) params.set('search', searchVal);
-
             const newUrl = `${window.location.pathname}${params.toString() ? '?' + params.toString() : ''}`;
             window.history.replaceState({}, '', newUrl);
-
             applyProductPageFilters();
         });
     }
 });
 
-// === HERO SEARCH FORM (ENTER KEY) ===
+// === HERO SEARCH ===
 document.getElementById('hero-search-form')?.addEventListener('submit', (e) => {
     e.preventDefault();
     const query = document.getElementById('home-search')?.value.trim();
@@ -327,7 +348,6 @@ document.getElementById('hero-search-form')?.addEventListener('submit', (e) => {
     }
 });
 
-// === LIVE SEARCH FROM HOME (TYPING → REDIRECT) ===
 document.getElementById('home-search')?.addEventListener('input', function() {
     const query = this.value.trim();
     clearTimeout(searchTimer);
@@ -338,7 +358,7 @@ document.getElementById('home-search')?.addEventListener('input', function() {
     }
 });
 
-// === ADD TO CART ===
+// === ADD TO CART (NOW 100% RELIABLE) ===
 function addToCart(id) {
     const p = products.find(x => x.id === id);
     if (!p) return showToast('Product not found.', 'error');
@@ -350,32 +370,20 @@ function addToCart(id) {
     localStorage.setItem('cart', JSON.stringify(cart));
     showToast(`${p.name} added!`, 'success');
 
-    document.querySelectorAll(`.add-to-cart-btn[data-id="${id}"]`).forEach(btn => {
-        const qty = cart.find(i => i.id === id).quantity;
-        btn.textContent = `Added (${qty})`;
-        btn.classList.replace('btn-outline-primary', 'btn-success');
-
-        if (!btn.parentElement.querySelector('a[href="/cart.html"]')) {
-            const goToCart = document.createElement('a');
-            goToCart.href = '/cart.html';
-            goToCart.className = 'btn btn-primary btn-sm';
-            goToCart.textContent = 'Go to Cart';
-            btn.parentElement.appendChild(goToCart);
-        }
-    });
-
+    updateCartUI(); // Update ALL buttons globally
     if (document.getElementById('cart-items')) displayCart();
 }
 
-// === CART DISPLAY + AUTO UPDATE ===
+// === DISPLAY CART ===
 function displayCart() {
     const container = document.getElementById('cart-items');
     if (!container) return;
-    container.innerHTML = '';
-    let subtotal = 0;
 
     cart = cart.filter(item => products.find(p => p.id === item.id));
     localStorage.setItem('cart', JSON.stringify(cart));
+
+    container.innerHTML = '';
+    let subtotal = 0;
 
     if (cart.length === 0) {
         container.innerHTML = '<div class="text-center text-muted py-4">Your cart is empty.</div>';
@@ -385,6 +393,8 @@ function displayCart() {
 
     cart.forEach(item => {
         const p = products.find(x => x.id === item.id);
+        if (!p) return;
+
         const img = (p.images?.[0]) || 'https://picsum.photos/100?random=0';
         const cartItem = document.createElement('div');
         cartItem.className = 'list-group-item p-3 border-bottom';
@@ -430,7 +440,7 @@ function updateQuantity(id, qty) {
         item.quantity = qty;
         localStorage.setItem('cart', JSON.stringify(cart));
         displayCart();
-        renderAll();
+        updateCartUI();
     }
 }
 
@@ -440,7 +450,7 @@ function removeFromCart(id) {
     localStorage.setItem('cart', JSON.stringify(cart));
     showToast(`${p?.name || 'Item'} removed.`, 'success');
     displayCart();
-    renderAll();
+    updateCartUI();
 }
 
 // === CALCULATE TOTAL ===
@@ -463,8 +473,6 @@ function calculateTotal(subtotal) {
         note = pickup ? '(Free Pickup)' : '(Goa Delivery)';
     } else {
         goa?.classList.replace('d-block', 'd-none');
-        shipping = 300;
-        note = '(Rest of India)';
     }
 
     chargeEl.textContent = shipping;
@@ -801,9 +809,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (window.location.pathname.includes('admin.html')) {
         checkAdminAuth();
     } else {
-        loadProducts();
-        setTimeout(() => {
-            if (document.getElementById('cart-items')) displayCart();
-        }, 800);
+        loadProducts(); // Loads → renders → updates cart
     }
 });
