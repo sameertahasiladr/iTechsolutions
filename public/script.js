@@ -1,4 +1,4 @@
-// script.js – FINAL: CART + SEARCH + EVERYTHING 100% FIXED
+// script.js – FINAL: CART FIXED 100% + NO RACE CONDITION
 const PHONE_NUMBER = '9545690700';
 const API_BASE = '/api';
 const CLOUDINARY_CLOUD = 'ddktvfhsb';
@@ -8,6 +8,9 @@ let products = [];
 let cart = JSON.parse(localStorage.getItem('cart') || '[]');
 let isAdminAuthenticated = false;
 let searchTimer;
+
+// === EXPOSE TO WINDOW (for cart.html) ===
+window.products = products;
 
 // === ADMIN AUTH ===
 async function loginAdmin(username, password) {
@@ -60,15 +63,16 @@ async function loadProducts() {
         const res = await fetch(`${API_BASE}/products`);
         if (!res.ok) throw new Error('Failed to load');
         products = await res.json();
+        window.products = products; // Update global
         renderAll();
-        updateCartUI(); // Sync cart buttons after products load
+        updateCartUI();
     } catch (err) {
         showToast('Error loading products.', 'error');
         console.error(err);
     }
 }
 
-// === RENDER ALL VIEWS ===
+// === RENDER ALL VIEWS (NO displayCart HERE) ===
 function renderAll() {
     if (document.getElementById('featured-products')) {
         displayProducts(document.getElementById('featured-products'), products, false, true);
@@ -79,9 +83,7 @@ function renderAll() {
     if (document.getElementById('admin-product-list') && isAdminAuthenticated) {
         displayProducts(document.getElementById('admin-product-list'), products, true);
     }
-    if (document.getElementById('cart-items')) {
-        displayCart();
-    }
+    // displayCart() REMOVED — called only after products ready
 }
 
 // === GLOBAL CART UI UPDATE ===
@@ -262,7 +264,6 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
         container.appendChild(item);
     });
 
-    // View More Toggle
     document.querySelectorAll('.view-more').forEach(link => {
         if (link.href?.includes('productview.html')) return;
         link.onclick = (e) => {
@@ -283,7 +284,6 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
         };
     });
 
-    // Add to Cart Buttons
     document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
         btn.onclick = (e) => {
             e.stopPropagation();
@@ -358,7 +358,7 @@ document.getElementById('home-search')?.addEventListener('input', function() {
     }
 });
 
-// === ADD TO CART (NOW 100% RELIABLE) ===
+// === ADD TO CART ===
 function addToCart(id) {
     const p = products.find(x => x.id === id);
     if (!p) return showToast('Product not found.', 'error');
@@ -370,17 +370,27 @@ function addToCart(id) {
     localStorage.setItem('cart', JSON.stringify(cart));
     showToast(`${p.name} added!`, 'success');
 
-    updateCartUI(); // Update ALL buttons globally
+    updateCartUI();
     if (document.getElementById('cart-items')) displayCart();
 }
 
-// === DISPLAY CART ===
+// === DISPLAY CART – NOW SAFE & WAIT-FREE ===
 function displayCart() {
     const container = document.getElementById('cart-items');
     if (!container) return;
 
-    cart = cart.filter(item => products.find(p => p.id === item.id));
-    localStorage.setItem('cart', JSON.stringify(cart));
+    // Show loading if products not ready
+    if (products.length === 0) {
+        container.innerHTML = '<div class="text-center text-muted py-4">Loading cart...</div>';
+        return;
+    }
+
+    // Filter invalid items only after products loaded
+    const validCart = cart.filter(item => products.some(p => p.id === item.id));
+    if (validCart.length !== cart.length) {
+        cart = validCart;
+        localStorage.setItem('cart', JSON.stringify(cart));
+    }
 
     container.innerHTML = '';
     let subtotal = 0;
@@ -809,6 +819,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (window.location.pathname.includes('admin.html')) {
         checkAdminAuth();
     } else {
-        loadProducts(); // Loads → renders → updates cart
+        loadProducts();
     }
 });
