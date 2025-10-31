@@ -1,4 +1,4 @@
-// script.js – FINAL: NO SHIPPING CHARGES, TEXT ONLY, GOA PICKUP FREE
+// script.js – FINAL: SEARCH ONLY ON ENTER KEY, NO AUTO SEARCH
 const PHONE_NUMBER = '9545690700';
 const API_BASE = '/api';
 const CLOUDINARY_CLOUD = 'ddktvfhsb';
@@ -335,6 +335,20 @@ document.querySelectorAll('#search, #type-filter, #sort').forEach(el => {
     }
 });
 
+// === HOME PAGE SEARCH – ONLY ON ENTER KEY ===
+document.getElementById('home-search')?.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        const query = this.value.trim();
+        if (query) {
+            window.location.href = `/products.html?search=${encodeURIComponent(query)}`;
+        } else {
+            showToast('Please type something to search.', 'error');
+        }
+    }
+});
+
+// === HERO SEARCH FORM – ON SUBMIT (BUTTON OR ENTER) ===
 document.getElementById('hero-search-form')?.addEventListener('submit', (e) => {
     e.preventDefault();
     const query = document.getElementById('home-search')?.value.trim();
@@ -342,16 +356,6 @@ document.getElementById('hero-search-form')?.addEventListener('submit', (e) => {
         window.location.href = `/products.html?search=${encodeURIComponent(query)}`;
     } else {
         showToast('Please type something to search.', 'error');
-    }
-});
-
-document.getElementById('home-search')?.addEventListener('input', function() {
-    const query = this.value.trim();
-    clearTimeout(searchTimer);
-    if (query.length >= 2) {
-        searchTimer = setTimeout(() => {
-            window.location.href = `/products.html?search=${encodeURIComponent(query)}`;
-        }, 600);
     }
 });
 
@@ -479,7 +483,7 @@ function calculateTotal(subtotal) {
     }
 
     modeEl.textContent = mode;
-    totalEl.textContent = subtotal; // TOTAL = SUBTOTAL ONLY
+    totalEl.textContent = subtotal;
 }
 
 // === ORDER VIA WHATSAPP ===
