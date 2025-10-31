@@ -1,4 +1,4 @@
-// script.js – FINAL: CART FIXED 100% + NO RACE CONDITION
+// script.js – FINAL: CART FIXED + NO SHIPPING IN TOTAL
 const PHONE_NUMBER = '9545690700';
 const API_BASE = '/api';
 const CLOUDINARY_CLOUD = 'ddktvfhsb';
@@ -9,7 +9,7 @@ let cart = JSON.parse(localStorage.getItem('cart') || '[]');
 let isAdminAuthenticated = false;
 let searchTimer;
 
-// === EXPOSE TO WINDOW (for cart.html) ===
+// === EXPOSE TO WINDOW ===
 window.products = products;
 
 // === ADMIN AUTH ===
@@ -63,7 +63,7 @@ async function loadProducts() {
         const res = await fetch(`${API_BASE}/products`);
         if (!res.ok) throw new Error('Failed to load');
         products = await res.json();
-        window.products = products; // Update global
+        window.products = products;
         renderAll();
         updateCartUI();
     } catch (err) {
@@ -72,7 +72,7 @@ async function loadProducts() {
     }
 }
 
-// === RENDER ALL VIEWS (NO displayCart HERE) ===
+// === RENDER ALL VIEWS ===
 function renderAll() {
     if (document.getElementById('featured-products')) {
         displayProducts(document.getElementById('featured-products'), products, false, true);
@@ -83,7 +83,6 @@ function renderAll() {
     if (document.getElementById('admin-product-list') && isAdminAuthenticated) {
         displayProducts(document.getElementById('admin-product-list'), products, true);
     }
-    // displayCart() REMOVED — called only after products ready
 }
 
 // === GLOBAL CART UI UPDATE ===
@@ -292,7 +291,7 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
     });
 }
 
-// === APPLY FILTERS ON PRODUCTS PAGE ===
+// === FILTERS & SEARCH (unchanged) ===
 function applyProductPageFilters() {
     const container = document.getElementById('product-list');
     if (!container) return;
@@ -323,7 +322,6 @@ function applyProductPageFilters() {
     displayProducts(container, list);
 }
 
-// === LIVE FILTERS ===
 document.querySelectorAll('#search, #type-filter, #sort').forEach(el => {
     if (el) {
         el.addEventListener('input', () => {
@@ -337,7 +335,6 @@ document.querySelectorAll('#search, #type-filter, #sort').forEach(el => {
     }
 });
 
-// === HERO SEARCH ===
 document.getElementById('hero-search-form')?.addEventListener('submit', (e) => {
     e.preventDefault();
     const query = document.getElementById('home-search')?.value.trim();
@@ -374,18 +371,16 @@ function addToCart(id) {
     if (document.getElementById('cart-items')) displayCart();
 }
 
-// === DISPLAY CART – NOW SAFE & WAIT-FREE ===
+// === DISPLAY CART ===
 function displayCart() {
     const container = document.getElementById('cart-items');
     if (!container) return;
 
-    // Show loading if products not ready
     if (products.length === 0) {
         container.innerHTML = '<div class="text-center text-muted py-4">Loading cart...</div>';
         return;
     }
 
-    // Filter invalid items only after products loaded
     const validCart = cart.filter(item => products.some(p => p.id === item.id));
     if (validCart.length !== cart.length) {
         cart = validCart;
@@ -463,31 +458,38 @@ function removeFromCart(id) {
     updateCartUI();
 }
 
-// === CALCULATE TOTAL ===
+// === CALCULATE TOTAL (NO SHIPPING ADDED) ===
 function calculateTotal(subtotal) {
     const state = document.getElementById('state')?.value;
     const pickup = document.getElementById('pickup')?.checked;
     const goa = document.getElementById('goa-pickup');
-    const chargeEl = document.getElementById('shipping-charge');
-    const noteEl = document.getElementById('shipping-note');
+    const modeEl = document.getElementById('delivery-mode');
+    const noteEl = document.getElementById('courier-note');
     const totalEl = document.getElementById('total');
 
-    if (!chargeEl || !totalEl || !noteEl) return;
+    if (!modeEl || !totalEl || !noteEl) return;
 
-    let shipping = 300;
-    let note = '(Rest of India)';
+    let mode = 'Standard Courier';
+    let note = '';
 
     if (state === 'Goa') {
         goa?.classList.replace('d-none', 'd-block');
-        shipping = pickup ? 0 : 200;
-        note = pickup ? '(Free Pickup)' : '(Goa Delivery)';
-    } else {
+        if (pickup) {
+            mode = 'Pickup from Dealer';
+            note = '(Free)';
+        } else {
+            mode = 'Courier (Goa)';
+            note = '(₹200)';
+        }
+    } else if (state) {
         goa?.classList.replace('d-block', 'd-none');
+        mode = 'Courier (Rest of India)';
+        note = '(₹300)';
     }
 
-    chargeEl.textContent = shipping;
+    modeEl.textContent = mode;
     noteEl.textContent = note;
-    totalEl.textContent = subtotal + shipping;
+    totalEl.textContent = subtotal; // TOTAL = SUBTOTAL ONLY
 }
 
 // === ORDER VIA WHATSAPP ===
@@ -509,8 +511,8 @@ document.getElementById('order-whatsapp')?.addEventListener('click', () => {
         return `• ${p.name} × ${item.quantity} = ${price * item.quantity} Rs`;
     }).join('\n');
 
-    const shipping = document.getElementById('shipping-charge').textContent;
-    const shippingNote = document.getElementById('shipping-note').textContent;
+    const deliveryMode = document.getElementById('delivery-mode').textContent;
+    const courierNote = document.getElementById('courier-note').textContent;
 
     const message = `
 *NEW ORDER - iTech Solutions*
@@ -518,15 +520,14 @@ document.getElementById('order-whatsapp')?.addEventListener('click', () => {
 *Customer Details*
 Name: ${name}
 Address: ${addr}, ${state}
-Delivery: ${pickup ? 'Pickup (Free)' : `Delivery - ${shippingNote}`}
+Delivery: ${deliveryMode} ${courierNote}
 
 *Order Items*
 ${items}
 
 *Pricing*
-Subtotal: ${total - shipping} Rs
-Shipping: ${shipping} Rs ${shippingNote}
-*Total: ${total} Rs*
+Subtotal: ${total} Rs
+*Total Payable: ${total} Rs*
 `.trim();
 
     const encoded = encodeURIComponent(message);
@@ -551,12 +552,15 @@ document.getElementById('order-call')?.addEventListener('click', () => {
         return `${p.name} x${item.quantity}`;
     }).join(', ');
 
+    const deliveryMode = document.getElementById('delivery-mode').textContent;
+    const courierNote = document.getElementById('courier-note').textContent;
+
     const script = `
 NEW ORDER - iTech Solutions
 
 Customer: ${name}
 Address: ${addr}, ${state}
-Delivery: ${pickup ? 'PICKUP (FREE)' : 'DELIVERY'}
+Delivery: ${deliveryMode} ${courierNote}
 
 Items: ${items}
 
@@ -574,19 +578,24 @@ Please confirm stock and arrange delivery.
     });
 });
 
-// === AUTO UPDATE ON INPUTS ===
-document.getElementById('customer-name')?.addEventListener('input', () => {
+// === AUTO UPDATE ON STATE/PICKUP ===
+document.getElementById('state')?.addEventListener('change', () => {
     const subtotal = cart.reduce((sum, item) => {
         const p = products.find(x => x.id === item.id);
         return sum + ((p?.discount || p?.price) * item.quantity);
     }, 0);
     calculateTotal(subtotal);
 });
-document.getElementById('address')?.addEventListener('input', displayCart);
-document.getElementById('state')?.addEventListener('change', displayCart);
-document.getElementById('pickup')?.addEventListener('change', displayCart);
 
-// === ADMIN: IMAGE PREVIEW, SAVE, EDIT, DELETE ===
+document.getElementById('pickup')?.addEventListener('change', () => {
+    const subtotal = cart.reduce((sum, item) => {
+        const p = products.find(x => x.id === item.id);
+        return sum + ((p?.discount || p?.price) * item.quantity);
+    }, 0);
+    calculateTotal(subtotal);
+});
+
+// === ADMIN & TOASTS (unchanged) ===
 document.getElementById('images')?.addEventListener('change', e => {
     const preview = document.getElementById('image-preview');
     preview.innerHTML = '';
@@ -710,7 +719,6 @@ async function deleteProduct(id) {
     });
 }
 
-// === TOASTS ===
 function createToastContainer() {
     let toastContainer = document.getElementById('toast-container');
     if (!toastContainer) {
@@ -769,7 +777,6 @@ function showConfirmToast(message, onConfirm, onCancel) {
     };
 }
 
-// === SERVICE BOOKING ===
 document.getElementById('home-book-whatsapp')?.addEventListener('click', () => {
     const name = document.getElementById('home-name')?.value.trim();
     const address = document.getElementById('home-address')?.value.trim();
