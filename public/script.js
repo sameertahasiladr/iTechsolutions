@@ -1,4 +1,4 @@
-// script.js – FINAL: CART FIXED + NO SHIPPING IN TOTAL
+// script.js – FINAL: NO SHIPPING CHARGES, TEXT ONLY, GOA PICKUP FREE
 const PHONE_NUMBER = '9545690700';
 const API_BASE = '/api';
 const CLOUDINARY_CLOUD = 'ddktvfhsb';
@@ -291,7 +291,7 @@ function displayProducts(container, list, isAdmin = false, isFeatured = false) {
     });
 }
 
-// === FILTERS & SEARCH (unchanged) ===
+// === FILTERS & SEARCH ===
 function applyProductPageFilters() {
     const container = document.getElementById('product-list');
     if (!container) return;
@@ -315,7 +315,7 @@ function applyProductPageFilters() {
 
     const sort = document.getElementById('sort')?.value;
     if (sort === 'price-asc') list.sort((a,b) => (a.discount||a.price) - (b.discount||b.price));
-    else if (sort === 'price-desc') list.sort((a,b) => (b.discount||b.price) - (a.discount||a.price));
+    else if (sort === 'price-desc') list.sort((a,b) => (b.discount||b.price) - (a.discount||b.price));
     else if (sort === 'name-asc') list.sort((a,b) => a.name.localeCompare(b.name));
     else if (sort === 'name-desc') list.sort((a,b) => b.name.localeCompare(b.name));
 
@@ -458,37 +458,27 @@ function removeFromCart(id) {
     updateCartUI();
 }
 
-// === CALCULATE TOTAL (NO SHIPPING ADDED) ===
+// === CALCULATE TOTAL – TEXT ONLY, NO CHARGE ===
 function calculateTotal(subtotal) {
     const state = document.getElementById('state')?.value;
     const pickup = document.getElementById('pickup')?.checked;
     const goa = document.getElementById('goa-pickup');
     const modeEl = document.getElementById('delivery-mode');
-    const noteEl = document.getElementById('courier-note');
     const totalEl = document.getElementById('total');
 
-    if (!modeEl || !totalEl || !noteEl) return;
+    if (!modeEl || !totalEl) return;
 
     let mode = 'Standard Courier';
-    let note = '';
 
     if (state === 'Goa') {
         goa?.classList.replace('d-none', 'd-block');
-        if (pickup) {
-            mode = 'Pickup from Dealer';
-            note = '(Free)';
-        } else {
-            mode = 'Courier (Goa)';
-            note = '(₹200)';
-        }
+        mode = pickup ? 'Pickup from Dealer (Free)' : 'Courier (Goa)';
     } else if (state) {
         goa?.classList.replace('d-block', 'd-none');
         mode = 'Courier (Rest of India)';
-        note = '(₹300)';
     }
 
     modeEl.textContent = mode;
-    noteEl.textContent = note;
     totalEl.textContent = subtotal; // TOTAL = SUBTOTAL ONLY
 }
 
@@ -497,7 +487,6 @@ document.getElementById('order-whatsapp')?.addEventListener('click', () => {
     const name = document.getElementById('customer-name')?.value.trim();
     const addr = document.getElementById('address')?.value.trim();
     const state = document.getElementById('state')?.value;
-    const pickup = state === 'Goa' && document.getElementById('pickup')?.checked;
     const total = document.getElementById('total')?.textContent;
 
     if (!name || !addr || !state || cart.length === 0) {
@@ -512,7 +501,6 @@ document.getElementById('order-whatsapp')?.addEventListener('click', () => {
     }).join('\n');
 
     const deliveryMode = document.getElementById('delivery-mode').textContent;
-    const courierNote = document.getElementById('courier-note').textContent;
 
     const message = `
 *NEW ORDER - iTech Solutions*
@@ -520,7 +508,7 @@ document.getElementById('order-whatsapp')?.addEventListener('click', () => {
 *Customer Details*
 Name: ${name}
 Address: ${addr}, ${state}
-Delivery: ${deliveryMode} ${courierNote}
+Delivery: ${deliveryMode}
 
 *Order Items*
 ${items}
@@ -539,7 +527,6 @@ document.getElementById('order-call')?.addEventListener('click', () => {
     const name = document.getElementById('customer-name')?.value.trim();
     const addr = document.getElementById('address')?.value.trim();
     const state = document.getElementById('state')?.value;
-    const pickup = state === 'Goa' && document.getElementById('pickup')?.checked;
     const total = document.getElementById('total')?.textContent;
 
     if (!name || !addr || !state || cart.length === 0) {
@@ -553,14 +540,13 @@ document.getElementById('order-call')?.addEventListener('click', () => {
     }).join(', ');
 
     const deliveryMode = document.getElementById('delivery-mode').textContent;
-    const courierNote = document.getElementById('courier-note').textContent;
 
     const script = `
 NEW ORDER - iTech Solutions
 
 Customer: ${name}
 Address: ${addr}, ${state}
-Delivery: ${deliveryMode} ${courierNote}
+Delivery: ${deliveryMode}
 
 Items: ${items}
 
@@ -595,7 +581,7 @@ document.getElementById('pickup')?.addEventListener('change', () => {
     calculateTotal(subtotal);
 });
 
-// === ADMIN & TOASTS (unchanged) ===
+// === ADMIN & TOASTS ===
 document.getElementById('images')?.addEventListener('change', e => {
     const preview = document.getElementById('image-preview');
     preview.innerHTML = '';
